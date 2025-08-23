@@ -56,17 +56,17 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen transition-colors">
       <Header />
       
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         {!analysisResult ? (
           <div className="space-y-8">
             <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-4xl font-bold mb-4">
                 Resume Job Matcher
               </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-xl opacity-75 max-w-3xl mx-auto">
                 Upload your resume and provide a job posting URL to get detailed matching analysis, 
                 tailoring suggestions, and improvement recommendations powered by AI.
               </p>
@@ -90,7 +90,7 @@ export default function Home() {
               <button
                 onClick={handleAnalyze}
                 disabled={!resumeText || !jobDescription || isAnalyzing}
-                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-4 px-8 rounded-lg text-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
+                className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:opacity-50 text-white font-semibold py-4 px-8 rounded-lg text-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
               >
                 {isAnalyzing ? 'Analyzing...' : 'Analyze Match'}
               </button>

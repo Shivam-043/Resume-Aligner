@@ -80,13 +80,47 @@ Personal Portfolio
 }
 
 /**
- * Generate a cover letter based on a resume and job description
+ * Generate a cover letter based on a resume and job description using Gemini 2.5 Pro
  * @param resumeText The extracted text from the resume
  * @param jobDescription The job description text
  * @param userName Optional user name to personalize the cover letter
  * @returns A generated cover letter
  */
-export function generateCoverLetter(resumeText: string, jobDescription: string, userName?: string): string {
+export async function generateCoverLetter(resumeText: string, jobDescription: string, userName?: string): Promise<string> {
+  try {
+    // Call the Gemini API through our backend route
+    const response = await fetch('/api/generate-cover-letter', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        resumeText,
+        jobDescription,
+        userName
+      })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.text();
+      throw new Error(`Failed to generate cover letter: ${errorData}`);
+    }
+    
+    const data = await response.json();
+    return data.coverLetter;
+  } catch (error) {
+    console.error('Error generating cover letter with Gemini:', error);
+    console.log('Falling back to rule-based cover letter generation');
+    
+    // Fall back to the rule-based approach if the API call fails
+    return generateFallbackCoverLetter(resumeText, jobDescription, userName);
+  }
+}
+
+/**
+ * Fallback cover letter generation function using rule-based approach
+ */
+function generateFallbackCoverLetter(resumeText: string, jobDescription: string, userName?: string): string {
   // Extract key information from the resume
   const name = userName || extractNameFromResume(resumeText) || 'Applicant';
   const skills = extractSkillsFromResume(resumeText);

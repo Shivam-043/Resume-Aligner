@@ -3,6 +3,85 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* Light theme variables */
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --card-shadow: rgba(0, 0, 0, 0.1);
+  
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #e5e7eb;
+  
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-light: #dbeafe;
+  
+  --success-bg: #dcfce7;
+  --success-text: #16a34a;
+  --warning-bg: #fef9c3;
+  --warning-text: #ca8a04;
+  --error-bg: #fee2e2;
+  --error-text: #dc2626;
+  
+  --chart-colors-green: #22c55e;
+  --chart-colors-red: #ef4444;
+  --chart-colors-blue: #3b82f6;
+}
+
+/* Dark theme class */
+.dark-theme {
+  --background: #0f172a; /* Dark bluish background */
+  --foreground: #e2e8f0;
+  
+  --card-bg: #1e293b; /* Slate 800 */
+  --card-border: #334155; /* Slate 700 */
+  --card-shadow: rgba(0, 0, 0, 0.25);
+  
+  --sidebar-bg: #1e293b;
+  --sidebar-border: #334155;
+  
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --primary-light: #1e3a8a;
+  
+  --success-bg: #064e3b;
+  --success-text: #4ade80;
+  --warning-bg: #422006;
+  --warning-text: #fcd34d;
+  --error-bg: #450a0a;
+  --error-text: #f87171;
+  
+  --chart-colors-green: #4ade80;
+  --chart-colors-red: #f87171;
+  --chart-colors-blue: #60a5fa;
+}
+
+/* Light theme class */
+.light-theme {
+  --background: #ffffff;
+  --foreground: #171717;
+  
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --card-shadow: rgba(0, 0, 0, 0.1);
+  
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #e5e7eb;
+  
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-light: #dbeafe;
+  
+  --success-bg: #dcfce7;
+  --success-text: #16a34a;
+  --warning-bg: #fef9c3;
+  --warning-text: #ca8a04;
+  --error-bg: #fee2e2;
+  --error-text: #dc2626;
+  
+  --chart-colors-green: #22c55e;
+  --chart-colors-red: #ef4444;
+  --chart-colors-blue: #3b82f6;
 }
 
 @theme inline {
@@ -12,15 +91,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
