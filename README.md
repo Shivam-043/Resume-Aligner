@@ -302,3 +302,67 @@ For issues, questions, or contributions:
 ---
 
 **Made with ❤️ for job seekers and career professionals**
+
+## Setup Instructions
+
+### Basic Setup
+
+1. Clone this repository
+2. Install dependencies: `npm install`
+3. Create a `.env.local` file with the following variables:
+   ```
+   GOOGLE_API_KEY=your-gemini-api-key
+   CLAUDE_API_KEY=your-claude-api-key (optional)
+   ```
+4. Start the development server: `npm run dev`
+
+### Firebase Setup (for Portfolio Hosting)
+
+To enable the portfolio hosting feature, you'll need to set up Firebase:
+
+1. Create a Firebase project at [https://console.firebase.google.com/](https://console.firebase.google.com/)
+2. Enable the following services:
+   - Authentication (Email/Password and Google sign-in)
+   - Firestore Database
+   - Storage
+3. Get your Firebase configuration from Project Settings > General > Your apps > SDK setup
+4. Add the Firebase configuration to your `.env.local` file:
+   ```
+   NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
+   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project-id.firebaseapp.com
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com
+   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
+   NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+   NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your-measurement-id
+   ```
+5. Set up Firebase security rules for Firestore and Storage to secure your application
+
+## How It Works
+
+1. Users upload their resume
+2. The app extracts key information from the resume
+3. Users can enter a job description URL or paste the text
+4. The AI analyzes the resume against the job description
+5. Users get a matching score and suggestions for improvement
+6. Users can generate a tailored portfolio and cover letter
+7. Users can host their portfolio with a shareable link (requires Firebase setup)
+
+## Portfolio Hosting Feature
+
+The new portfolio hosting feature allows users to:
+
+- Generate a professional portfolio from their resume
+- Host the portfolio online with a unique URL
+- Share the portfolio link with recruiters and on social media
+- Authentication only required when hosting (not for resume analysis)
+- View and manage all their hosted portfolios
+
+## Tech Stack
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Gemini API
+- Firebase (Authentication, Firestore, Storage)

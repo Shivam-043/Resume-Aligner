@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { Upload, FileText, CheckCircle, X, AlertCircle } from 'lucide-react'
 import { extractTextFromPdf } from '@/lib/pdf-util'
 
@@ -15,6 +15,7 @@ export default function ResumeUploader({ onResumeExtracted, resumeText }: Resume
   const [uploadedFileName, setUploadedFileName] = useState<string>('')
   const [error, setError] = useState<string>('')
   const [errorDetails, setErrorDetails] = useState<string>('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const processFile = useCallback(async (file: File) => {
     if (file.type !== 'application/pdf') {
@@ -89,8 +90,12 @@ export default function ResumeUploader({ onResumeExtracted, resumeText }: Resume
     setErrorDetails('')
   }
 
+  const triggerFileInput = () => {
+    fileInputRef.current?.click()
+  }
+
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
+    <div className="bg-white rounded-xl p-6 shadow-inner">
       <div className="flex items-center space-x-3 mb-6">
         <FileText className="h-6 w-6 text-blue-600" />
         <h2 className="text-xl font-semibold text-gray-900">Upload Resume</h2>
@@ -98,49 +103,50 @@ export default function ResumeUploader({ onResumeExtracted, resumeText }: Resume
 
       {!resumeText ? (
         <div
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+          className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${
             isDragOver 
-              ? 'border-blue-400 bg-blue-50' 
+              ? 'border-blue-400 bg-blue-50 shadow-inner' 
               : 'border-gray-300 hover:border-gray-400'
           }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
+          onClick={triggerFileInput}
         >
-          <Upload className={`h-12 w-12 mx-auto mb-4 ${isDragOver ? 'text-blue-500' : 'text-gray-400'}`} />
-          
-          {isUploading ? (
-            <div className="space-y-2">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="text-gray-600">Processing your resume...</p>
-              <p className="text-xs text-gray-500">This may take a few moments</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <p className="text-lg font-medium text-gray-700">
-                Drop your resume here or click to browse
-              </p>
-              <p className="text-sm text-gray-500">
-                Supports PDF files up to 10MB with extractable text
-              </p>
-              <p className="text-xs text-gray-500">
-                PDF must contain actual text, not just images or scans
-              </p>
-              <input
-                type="file"
-                accept=".pdf"
-                onChange={handleFileSelect}
-                className="hidden"
-                id="resume-upload"
-              />
-              <label
-                htmlFor="resume-upload"
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 cursor-pointer transition-colors"
-              >
-                Choose File
-              </label>
-            </div>
-          )}
+          <div className="flex flex-col items-center justify-center space-y-6 py-6">
+            {isUploading ? (
+              <div className="space-y-4">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-t-2 border-blue-600 mx-auto"></div>
+                <p className="text-gray-600 font-medium">Processing your resume...</p>
+                <p className="text-xs text-gray-500">This may take a few moments</p>
+              </div>
+            ) : (
+              <>
+                <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center">
+                  <Upload className="h-10 w-10 text-blue-500" strokeWidth={1.5} />
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-lg font-semibold text-blue-600">Click to upload</span>
+                    <span className="text-lg text-gray-700">or drag and drop</span>
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    PDF files up to 10MB with extractable text
+                  </p>
+                </div>
+              </>
+            )}
+            
+            <input
+              type="file"
+              accept=".pdf"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              className="hidden"
+              id="resume-upload"
+            />
+          </div>
         </div>
       ) : (
         <div className="space-y-4">

@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { generateCoverLetter } from '@/lib/pdf-util'
 import { Download, FileText, Check, Copy, PenSquare } from 'lucide-react'
+import { useCoverLetter } from '@/lib/cover-letter-context'
 
 interface CoverLetterGeneratorProps {
   resumeText: string
@@ -11,25 +12,76 @@ interface CoverLetterGeneratorProps {
 }
 
 export default function CoverLetterGenerator({ resumeText, jobDescription, userName }: CoverLetterGeneratorProps) {
-  const [coverLetter, setCoverLetter] = useState<string>('')
-  const [isGenerating, setIsGenerating] = useState(false)
+  // Use the cover letter context for state persistence
+  const { 
+    coverLetterText, 
+    setCoverLetterText,
+    isGenerating,
+    setIsGenerating,
+    coverLetterState,
+    updateCoverLetterState
+  } = useCoverLetter();
+
   const [isEditing, setIsEditing] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const [editableCoverLetter, setEditableCoverLetter] = useState<string>('')
+  
+  // Save the current resume and job description to context for persistence
+  useEffect(() => {
+    if (resumeText || jobDescription) {
+      updateCoverLetterState({
+        resumeText,
+        jobDescription
+      });
+    }
+  }, [resumeText, jobDescription, updateCoverLetterState]);
+  
+  // Initialize editable cover letter when coverLetterText changes
+  useEffect(() => {
+    if (coverLetterText) {
+      setEditableCoverLetter(coverLetterText);
+    }
+  }, [coverLetterText]);
 
   const handleGenerateCoverLetter = () => {
     setIsGenerating(true)
+    updateCoverLetterState({
+      generationStage: 'started',
+      progress: 10,
+      progressMessage: 'Initializing cover letter generation...'
+    });
+    
     try {
       // Use a setTimeout to prevent UI freezing during generation
       setTimeout(() => {
+        updateCoverLetterState({
+          generationStage: 'generating',
+          progress: 50,
+          progressMessage: 'Creating personalized cover letter...'
+        });
+        
         const generatedCoverLetter = generateCoverLetter(resumeText, jobDescription, userName)
-        setCoverLetter(generatedCoverLetter)
+        setCoverLetterText(generatedCoverLetter)
         setEditableCoverLetter(generatedCoverLetter)
+        
+        updateCoverLetterState({
+          generationStage: 'completed',
+          progress: 100,
+          progressMessage: 'Cover letter generation complete!',
+          coverLetterText: generatedCoverLetter
+        });
+        
         setIsGenerating(false)
       }, 100)
     } catch (error) {
       console.error('Error generating cover letter:', error)
       setIsGenerating(false)
+      updateCoverLetterState({
+        generationStage: 'error',
+        progress: 0,
+        progressMessage: 'Error generating cover letter',
+        error: 'Failed to generate cover letter. Please try again.'
+      });
       alert('Error generating cover letter. Please try again.')
     }
   }
@@ -37,10 +89,10 @@ export default function CoverLetterGenerator({ resumeText, jobDescription, userN
   const handleEditToggle = () => {
     if (isEditing) {
       // Save changes
-      setCoverLetter(editableCoverLetter)
+      setCoverLetterText(editableCoverLetter)
     } else {
       // Enter edit mode
-      setEditableCoverLetter(coverLetter)
+      setEditableCoverLetter(coverLetterText || '')
     }
     setIsEditing(!isEditing)
   }
@@ -50,24 +102,47 @@ export default function CoverLetterGenerator({ resumeText, jobDescription, userN
   }
 
   const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(coverLetter)
-    setIsCopied(true)
-    setTimeout(() => setIsCopied(false), 2000)
+    if (coverLetterText) {
+      navigator.clipboard.writeText(coverLetterText)
+      setIsCopied(true)
+      setTimeout(() => setIsCopied(false), 2000)
+    }
   }
 
   const handleDownloadAsText = () => {
-    const blob = new Blob([coverLetter], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'cover-letter.txt'
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+    if (coverLetterText) {
+      const blob = new Blob([coverLetterText], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'cover-letter.txt'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    }
   }
+  
+  // Resume generation if it was in progress when user navigated away
+  useEffect(() => {
+    const resumeGeneration = async () => {
+      // If we were in the middle of generating and have the necessary inputs
+      if (['started', 'generating'].includes(coverLetterState.generationStage) && 
+          resumeText && jobDescription && !coverLetterText) {
+        try {
+          handleGenerateCoverLetter();
+        } catch (error) {
+          console.error("Error resuming cover letter generation:", error);
+        }
+      }
+    };
+    
+    if (!coverLetterText) {
+      resumeGeneration();
+    }
+  }, []);
 
-  if (!coverLetter) {
+  if (!coverLetterText) {
     return (
       <div className="bg-white rounded-xl shadow-lg p-6">
         <div className="flex items-center space-x-3 mb-6">
@@ -93,7 +168,7 @@ export default function CoverLetterGenerator({ resumeText, jobDescription, userN
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                 </span>
-                Generating...
+                {coverLetterState.progressMessage || 'Generating...'}
               </>
             ) : (
               <>Generate Cover Letter</>
@@ -155,7 +230,7 @@ export default function CoverLetterGenerator({ resumeText, jobDescription, userN
           />
         ) : (
           <div className="whitespace-pre-wrap font-serif text-gray-800">
-            {coverLetter}
+            {coverLetterText}
           </div>
         )}
       </div>

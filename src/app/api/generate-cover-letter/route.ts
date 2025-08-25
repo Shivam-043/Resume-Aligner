@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
     // Initialize the Gemini API client
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // Prepare the prompt for Gemini
     const prompt = `You are an expert cover letter writer with experience in professional career coaching.

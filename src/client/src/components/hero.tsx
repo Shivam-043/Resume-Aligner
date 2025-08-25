@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Button } from './ui/button';
+import { usePortfolio } from '../../../lib/portfolio-context';
 
 interface PersonalInfo {
   name: string;
@@ -19,26 +20,20 @@ const defaultPersonalInfo: PersonalInfo = {
 
 const Hero = () => {
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>(defaultPersonalInfo);
+  // Use the shared context for data persistence
+  const { portfolioData } = usePortfolio();
   
   useEffect(() => {
-    // Try to get portfolio data from localStorage
-    try {
-      const portfolioData = localStorage.getItem('resumeVibe_portfolioData');
-      if (portfolioData) {
-        const parsedData = JSON.parse(portfolioData);
-        if (parsedData.personalInfo) {
-          setPersonalInfo({
-            name: parsedData.personalInfo.name || defaultPersonalInfo.name,
-            jobTitle: parsedData.personalInfo.jobTitle || defaultPersonalInfo.jobTitle,
-            summary: parsedData.personalInfo.summary || defaultPersonalInfo.summary,
-            profileImage: parsedData.personalInfo.profileImage || defaultPersonalInfo.profileImage
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Error loading portfolio data:", error);
+    // Get data from context instead of directly from localStorage
+    if (portfolioData?.personalInfo) {
+      setPersonalInfo({
+        name: portfolioData.personalInfo.name || defaultPersonalInfo.name,
+        jobTitle: portfolioData.personalInfo.jobTitle || defaultPersonalInfo.jobTitle,
+        summary: portfolioData.personalInfo.summary || defaultPersonalInfo.summary,
+        profileImage: portfolioData.personalInfo.profileImage || defaultPersonalInfo.profileImage
+      });
     }
-  }, []);
+  }, [portfolioData]);
   
   // Split name into first and last for styling
   const nameParts = personalInfo.name.trim().split(/\s+/);
