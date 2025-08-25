@@ -17,13 +17,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Check if we're on the client and if there's a saved theme
   useEffect(() => {
     const savedTheme = window.localStorage.getItem('theme') as Theme
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    // Remove automatic dark mode detection to prevent black theme on deployment
+    // const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
     
     if (savedTheme) {
       setTheme(savedTheme)
-    } else if (prefersDark) {
-      setTheme('dark')
     }
+    // Removed: else if (prefersDark) { setTheme('dark') }
+    // Now it will stay light theme by default unless user explicitly saved a preference
   }, [])
   
   // Apply the theme class to the document

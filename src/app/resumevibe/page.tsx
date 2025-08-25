@@ -14,8 +14,28 @@ const ResumeVibeApp = dynamic(
 
 export default function ResumeVibePage() {
   useEffect(() => {
-    // Set page title
-    document.title = 'Resume Portfolio | Resume Aligner';
+    // Set page title and meta tags for SEO
+    document.title = 'Resume Portfolio Builder - Create Professional Portfolios | Resume Aligner';
+    
+    // Add meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Build stunning professional portfolios from your resume data. Showcase your skills, experience, and projects with our AI-powered portfolio generator.');
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'description';
+      meta.content = 'Build stunning professional portfolios from your resume data. Showcase your skills, experience, and projects with our AI-powered portfolio generator.';
+      document.head.appendChild(meta);
+    }
+
+    // Add keywords meta tag
+    const metaKeywords = document.querySelector('meta[name="keywords"]');
+    if (!metaKeywords) {
+      const meta = document.createElement('meta');
+      meta.name = 'keywords';
+      meta.content = 'portfolio builder, resume portfolio, professional portfolio, online portfolio, career portfolio, portfolio generator';
+      document.head.appendChild(meta);
+    }
     
     // Ensure we're working with clean navigation state
     if (typeof window !== 'undefined') {

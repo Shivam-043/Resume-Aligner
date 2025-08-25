@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function UploadPage() {
@@ -12,6 +12,31 @@ export default function UploadPage() {
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
+
+  // Handle SEO metadata in client component
+  useEffect(() => {
+    document.title = 'Upload Resume - Get Instant AI Analysis & ATS Score | Resume Aligner'
+    
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]')
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Upload your resume and get instant AI-powered analysis, ATS compatibility score, and personalized optimization recommendations. Free resume checker with detailed feedback.')
+    } else {
+      const meta = document.createElement('meta')
+      meta.name = 'description'
+      meta.content = 'Upload your resume and get instant AI-powered analysis, ATS compatibility score, and personalized optimization recommendations. Free resume checker with detailed feedback.'
+      document.head.appendChild(meta)
+    }
+
+    // Update keywords
+    const metaKeywords = document.querySelector('meta[name="keywords"]')
+    if (!metaKeywords) {
+      const meta = document.createElement('meta')
+      meta.name = 'keywords'
+      meta.content = 'upload resume, resume analyzer, ATS score, resume checker, resume feedback, job application tool, resume optimization'
+      document.head.appendChild(meta)
+    }
+  }, [])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
