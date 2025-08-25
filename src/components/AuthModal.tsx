@@ -8,6 +8,7 @@ import { Button } from '../client/src/components/ui/button';
 import { Input } from '../client/src/components/ui/input';
 import { Label } from '../client/src/components/ui/label';
 import { Alert, AlertDescription } from '../client/src/components/ui/alert';
+import { FirebaseError } from 'firebase/app';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -43,8 +44,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       }
       onSuccess();
       onClose();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      const errorMessage = err instanceof FirebaseError 
+        ? err.message 
+        : err instanceof Error 
+          ? err.message 
+          : 'An unexpected error occurred';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -58,8 +64,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       await signInWithGoogle();
       onSuccess();
       onClose();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      const errorMessage = err instanceof FirebaseError 
+        ? err.message 
+        : err instanceof Error 
+          ? err.message 
+          : 'An unexpected error occurred';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

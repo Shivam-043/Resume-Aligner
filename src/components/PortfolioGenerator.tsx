@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { Button } from '../client/src/components/ui/button';
 import { transformResumeToPortfolioData } from '@/lib/portfolio-util';
 import { Alert, AlertTitle, AlertDescription } from '../client/src/components/ui/alert';
@@ -8,10 +9,9 @@ import { usePortfolio } from '@/lib/portfolio-context';
 
 interface PortfolioGeneratorProps {
   resumeText: string;
-  jobDescription?: string;
 }
 
-export default function PortfolioGenerator({ resumeText, jobDescription }: PortfolioGeneratorProps) {
+export default function PortfolioGenerator({ resumeText }: PortfolioGeneratorProps) {
   // Use the enhanced context for shared state
   const { 
     portfolioData, 
@@ -25,7 +25,6 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
     profileImage,
     setProfileImage,
     setResumeText,
-    hasUnsavedChanges,
     setHasUnsavedChanges
   } = usePortfolio();
   
@@ -75,7 +74,7 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
     setHasUnsavedChanges(true);
   };
 
-  const handleGeneratePortfolio = async () => {
+  const handleGeneratePortfolio = useCallback(async () => {
     if (!resumeText.trim()) {
       setError('No resume data available. Please upload and parse a resume first.');
       return;
@@ -151,7 +150,17 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
         error: 'Failed to generate portfolio. Please try again.'
       });
     }
-  };
+  }, [
+    resumeText, 
+    profileImage, 
+    setIsGenerating, 
+    setError, 
+    setGenerationProgress, 
+    updateGenerationState, 
+    setPortfolioData, 
+    setHasUnsavedChanges,
+    setGenerationComplete
+  ]);
 
   // Resume generation if it was in progress
   useEffect(() => {
@@ -173,7 +182,13 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
     if (!portfolioData) {
       resumeGeneration();
     }
-  }, []); // Empty dependency array to run only once on mount
+  }, [
+    generationState.stage, 
+    resumeText, 
+    profileImage, 
+    portfolioData, 
+    handleGeneratePortfolio
+  ]); // Added all required dependencies
 
   return (
     <div className="w-full mt-8 p-6 bg-white rounded-lg shadow-md">
@@ -193,7 +208,7 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
         <Alert className="mb-4 bg-green-50 border-green-200">
           <AlertTitle className="text-green-800">Success!</AlertTitle>
           <AlertDescription className="text-green-700">
-            Portfolio successfully generated! We've opened it in a new tab.
+            Portfolio successfully generated! We&apos;ve opened it in a new tab.
             <br />
             You can also <a href="/resumevibe" target="_blank" className="text-blue-600 hover:text-blue-800 underline">click here</a> to view your portfolio.
           </AlertDescription>
@@ -225,10 +240,13 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
         <div className="flex flex-col items-center space-y-4">
           {profileImage ? (
             <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-blue-500">
-              <img 
+              <Image 
                 src={profileImage} 
                 alt="Profile preview" 
-                className="w-full h-full object-cover"
+                className="object-cover"
+                fill
+                sizes="128px"
+                priority
               />
             </div>
           ) : (

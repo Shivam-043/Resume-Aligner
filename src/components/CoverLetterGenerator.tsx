@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { generateCoverLetter } from '@/lib/pdf-util'
 import { Download, FileText, Check, Copy, PenSquare } from 'lucide-react'
 import { useCoverLetter } from '@/lib/cover-letter-context'
@@ -43,7 +43,7 @@ export default function CoverLetterGenerator({ resumeText, jobDescription, userN
     }
   }, [coverLetterText]);
 
-  const handleGenerateCoverLetter = () => {
+  const handleGenerateCoverLetter = useCallback(async () => {
     setIsGenerating(true)
     updateCoverLetterState({
       generationStage: 'started',
@@ -53,14 +53,14 @@ export default function CoverLetterGenerator({ resumeText, jobDescription, userN
     
     try {
       // Use a setTimeout to prevent UI freezing during generation
-      setTimeout(() => {
+      setTimeout(async () => {
         updateCoverLetterState({
           generationStage: 'generating',
           progress: 50,
           progressMessage: 'Creating personalized cover letter...'
         });
         
-        const generatedCoverLetter = generateCoverLetter(resumeText, jobDescription, userName)
+        const generatedCoverLetter = await generateCoverLetter(resumeText, jobDescription, userName)
         setCoverLetterText(generatedCoverLetter)
         setEditableCoverLetter(generatedCoverLetter)
         
@@ -84,7 +84,7 @@ export default function CoverLetterGenerator({ resumeText, jobDescription, userN
       });
       alert('Error generating cover letter. Please try again.')
     }
-  }
+  }, [resumeText, jobDescription, userName, setIsGenerating, updateCoverLetterState, setCoverLetterText]);
 
   const handleEditToggle = () => {
     if (isEditing) {
@@ -140,7 +140,7 @@ export default function CoverLetterGenerator({ resumeText, jobDescription, userN
     if (!coverLetterText) {
       resumeGeneration();
     }
-  }, []);
+  }, [coverLetterState.generationStage, coverLetterText, handleGenerateCoverLetter, jobDescription, resumeText]);
 
   if (!coverLetterText) {
     return (

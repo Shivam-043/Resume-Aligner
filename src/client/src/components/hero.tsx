@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { ChevronDown } from 'lucide-react';
 import { Button } from './ui/button';
 import { usePortfolio } from '../../../lib/portfolio-context';
@@ -52,11 +53,16 @@ const Hero = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 z-10 text-center animate-fade-in">
         <div className="mb-8">
           <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-2xl animate-bounce-subtle ring-4 ring-[var(--portfolio-primary)] ring-offset-4 ring-offset-transparent" data-testid="profile-avatar">
-            <img 
-              src={personalInfo.profileImage || "/placeholder-profile.jpg"} 
-              alt={`${personalInfo.name} - ${personalInfo.jobTitle}`}
-              className="w-full h-full object-cover object-center"
-            />
+            <div className="relative w-full h-full">
+              <Image 
+                src={personalInfo.profileImage || "/placeholder-profile.jpg"} 
+                alt={`${personalInfo.name} - ${personalInfo.jobTitle}`}
+                fill
+                sizes="128px"
+                className="object-cover object-center"
+                priority
+              />
+            </div>
           </div>
         </div>
         

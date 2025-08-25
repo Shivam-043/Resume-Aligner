@@ -165,7 +165,7 @@ function extractSectionsFromResume(resumeText: string) {
   
   // Identify section boundaries
   let currentSection = '';
-  let currentSectionStart = 0;
+  // let currentSectionStart = 0;
   
   lines.forEach((line, index) => {
     const trimmedLine = line.trim().toUpperCase();
@@ -186,7 +186,7 @@ function extractSectionsFromResume(resumeText: string) {
       ) || trimmedLine;
       
       currentSection = matchedHeader;
-      currentSectionStart = index;
+      // currentSectionStart = index;
       
       sections[currentSection] = {
         start: index,
@@ -463,236 +463,237 @@ function extractSkillsData(resumeText: string, sections: Record<string, { start:
 /**
  * Extract education data from resume
  */
-function extractEducationData(resumeText: string, sections: Record<string, { start: number, end: number }>) {
-  const educationData: Array<{
-    institution: string;
-    degree: string;
-    fieldOfStudy: string;
-    date: string;
-    gpa?: string;
-    achievements?: string[];
-  }> = [];
+// function extractEducationData(resumeText: string, sections: Record<string, { start: number, end: number }>) {
+//   const educationData: Array<{
+//     institution: string;
+//     degree: string;
+//     fieldOfStudy: string;
+//     date: string;
+//     gpa?: string;
+//     achievements?: string[];
+//   }> = [];
   
-  const educationSectionKeys = ['EDUCATION', 'ACADEMIC BACKGROUND'];
-  let educationSection = null;
+//   const educationSectionKeys = ['EDUCATION', 'ACADEMIC BACKGROUND'];
+//   let educationSection = null;
   
-  // Find the education section
-  for (const key of educationSectionKeys) {
-    if (sections[key]) {
-      educationSection = sections[key];
-      break;
-    }
-  }
+//   // Find the education section
+//   for (const key of educationSectionKeys) {
+//     if (sections[key]) {
+//       educationSection = sections[key];
+//       break;
+//     }
+//   }
   
-  if (educationSection) {
-    const lines = resumeText.split('\n');
-    const educationText = lines.slice(educationSection.start + 1, educationSection.end).join('\n');
+//   if (educationSection) {
+//     const lines = resumeText.split('\n');
+//     const educationText = lines.slice(educationSection.start + 1, educationSection.end).join('\n');
     
-    // Try to identify individual education entries
-    const eduEntries = educationText.split(/\n(?=[A-Z][a-z]+\s|[A-Z]+\s)/);
+//     // Try to identify individual education entries
+//     const eduEntries = educationText.split(/\n(?=[A-Z][a-z]+\s|[A-Z]+\s)/);
     
-    eduEntries.forEach(entry => {
-      if (entry.trim().length < 10) return; // Skip very short entries
+//     eduEntries.forEach(entry => {
+//       if (entry.trim().length < 10) return; // Skip very short entries
       
-      const entryLines = entry.split('\n');
+//       const entryLines = entry.split('\n');
       
-      // Extract institution name (usually at the beginning of the entry)
-      let institution = '';
-      let degree = '';
-      let fieldOfStudy = '';
-      let date = '';
-      let gpa = '';
-      const achievements: string[] = [];
+//       // Extract institution name (usually at the beginning of the entry)
+//       let institution = '';
+//       let degree = '';
+//       let fieldOfStudy = '';
+//       let date = '';
+//       let gpa = '';
+//       const achievements: string[] = [];
       
-      // First line often contains institution name
-      if (entryLines.length > 0) {
-        institution = entryLines[0].trim();
-      }
+//       // First line often contains institution name
+//       if (entryLines.length > 0) {
+//         institution = entryLines[0].trim();
+//       }
       
-      // Look for degree information
-      const degreeRegex = /\b(?:Bachelor|Master|PhD|Doctorate|Associate|B\.S\.|B\.A\.|M\.S\.|M\.A\.|M\.B\.A\.|Ph\.D\.|B\.Tech|M\.Tech|B\.E\.|M\.E\.|B\.Com|M\.Com)\b[^,\n]*/i;
-      const degreeMatch = entry.match(degreeRegex);
-      if (degreeMatch) {
-        degree = degreeMatch[0].trim();
-      }
+//       // Look for degree information
+//       const degreeRegex = /\b(?:Bachelor|Master|PhD|Doctorate|Associate|B\.S\.|B\.A\.|M\.S\.|M\.A\.|M\.B\.A\.|Ph\.D\.|B\.Tech|M\.Tech|B\.E\.|M\.E\.|B\.Com|M\.Com)\b[^,\n]*/i;
+//       const degreeMatch = entry.match(degreeRegex);
+//       if (degreeMatch) {
+//         degree = degreeMatch[0].trim();
+//       }
       
-      // Look for field of study
-      const fieldRegex = /\bin\s+([^,\n]+)/i;
-      const fieldMatch = entry.match(fieldRegex);
-      if (fieldMatch && fieldMatch[1]) {
-        fieldOfStudy = fieldMatch[1].trim();
-      }
+//       // Look for field of study
+//       const fieldRegex = /\bin\s+([^,\n]+)/i;
+//       const fieldMatch = entry.match(fieldRegex);
+//       if (fieldMatch && fieldMatch[1]) {
+//         fieldOfStudy = fieldMatch[1].trim();
+//       }
       
-      // Extract date information
-      const dateRegex = /(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}|(?:19|20)\d{2}/i;
-      const dateMatches = Array.from(entry.matchAll(new RegExp(dateRegex, 'gi')));
+//       // Extract date information
+//       const dateRegex = /(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}|(?:19|20)\d{2}/i;
+//       const dateMatches = Array.from(entry.matchAll(new RegExp(dateRegex, 'gi')));
       
-      if (dateMatches.length === 2) {
-        date = `${dateMatches[0][0]} - ${dateMatches[1][0]}`;
-      } else if (dateMatches.length === 1) {
-        date = `Graduated: ${dateMatches[0][0]}`;
-      }
+//       if (dateMatches.length === 2) {
+//         date = `${dateMatches[0][0]} - ${dateMatches[1][0]}`;
+//       } else if (dateMatches.length === 1) {
+//         date = `Graduated: ${dateMatches[0][0]}`;
+//       }
       
-      // Look for GPA information
-      const gpaRegex = /\b(?:GPA|Grade Point Average)[\s:]*([0-4]\.[0-9]+|[0-9]+\.[0-9]+)(?:\/([0-9]\.[0-9]+|[0-9]+))?\b/i;
-      const gpaMatch = entry.match(gpaRegex);
-      if (gpaMatch) {
-        gpa = gpaMatch[0].trim();
-      }
+//       // Look for GPA information
+//       const gpaRegex = /\b(?:GPA|Grade Point Average)[\s:]*([0-4]\.[0-9]+|[0-9]+\.[0-9]+)(?:\/([0-9]\.[0-9]+|[0-9]+))?\b/i;
+//       const gpaMatch = entry.match(gpaRegex);
+//       if (gpaMatch) {
+//         gpa = gpaMatch[0].trim();
+//       }
       
-      // Extract achievements or coursework
-      entryLines.forEach((line, i) => {
-        if (i < 2) return; // Skip the first few lines which are likely institution, degree
+//       // Extract achievements or coursework
+//       entryLines.forEach((line, i) => {
+//         if (i < 2) return; // Skip the first few lines which are likely institution, degree
         
-        const trimmedLine = line.trim();
+//         const trimmedLine = line.trim();
         
-        // Detect bullet points or coursework
-        if ((trimmedLine.startsWith('•') || trimmedLine.startsWith('-') || trimmedLine.startsWith('*') ||
-             /^\d+\./.test(trimmedLine)) || 
-            /\b(?:coursework|courses|achievements|honors|awards)\b/i.test(trimmedLine)) {
-          achievements.push(trimmedLine.replace(/^[•\-*\d\.]+\s*/, ''));
-        }
-      });
+//         // Detect bullet points or coursework
+//         if ((trimmedLine.startsWith('•') || trimmedLine.startsWith('-') || trimmedLine.startsWith('*') ||
+//              /^\d+\./.test(trimmedLine)) || 
+//             /\b(?:coursework|courses|achievements|honors|awards)\b/i.test(trimmedLine)) {
+//           achievements.push(trimmedLine.replace(/^[•\-*\d\.]+\s*/, ''));
+//         }
+//       });
       
-      // Only add entries that have at least institution information
-      if (institution) {
-        educationData.push({
-          institution,
-          degree: degree || 'Degree',
-          fieldOfStudy: fieldOfStudy || 'Field of Study',
-          date: date || 'Date Range',
-          gpa: gpa || undefined,
-          achievements: achievements.length > 0 ? achievements : undefined
-        });
-      }
-    });
-  }
+//       // Only add entries that have at least institution information
+//       if (institution) {
+//         educationData.push({
+//           institution,
+//           degree: degree || 'Degree',
+//           fieldOfStudy: fieldOfStudy || 'Field of Study',
+//           date: date || 'Date Range',
+//           gpa: gpa || undefined,
+//           achievements: achievements.length > 0 ? achievements : undefined
+//         });
+//       }
+//     });
+//   }
   
-  return educationData;
-}
+//   return educationData;
+// }
 
 /**
  * Extract project data from resume
  */
-function extractProjectsData(resumeText: string, sections: Record<string, { start: number, end: number }>) {
-  const projectsData: Array<{
-    title: string;
-    description: string;
-    technologies: string[];
-    link?: string;
-  }> = [];
+// function extractProjectsData(resumeText: string, sections: Record<string, { start: number, end: number }>) {
+//   const projectsData: Array<{
+//     title: string;
+//     description: string;
+//     technologies: string[];
+//     link?: string;
+//   }> = [];
   
-  const projectsSectionKeys = ['PROJECTS', 'PROJECT EXPERIENCE'];
-  let projectsSection = null;
+//   const projectsSectionKeys = ['PROJECTS', 'PROJECT EXPERIENCE'];
+//   let projectsSection = null;
   
-  // Find the projects section
-  for (const key of projectsSectionKeys) {
-    if (sections[key]) {
-      projectsSection = sections[key];
-      break;
-    }
-  }
+//   // Find the projects section
+//   for (const key of projectsSectionKeys) {
+//     if (sections[key]) {
+//       projectsSection = sections[key];
+//       break;
+//     }
+//   }
   
-  if (projectsSection) {
-    const lines = resumeText.split('\n');
-    const projectsText = lines.slice(projectsSection.start + 1, projectsSection.end).join('\n');
+//   if (projectsSection) {
+//     const lines = resumeText.split('\n');
+//     const projectsText = lines.slice(projectsSection.start + 1, projectsSection.end).join('\n');
     
-    // Try to identify individual project entries
-    const projectEntries = projectsText.split(/\n(?=[A-Z][a-z]+\s|[A-Z]+\s)/);
+//     // Try to identify individual project entries
+//     const projectEntries = projectsText.split(/\n(?=[A-Z][a-z]+\s|[A-Z]+\s)/);
     
-    projectEntries.forEach(entry => {
-      if (entry.trim().length < 10) return; // Skip very short entries
+//     projectEntries.forEach(entry => {
+//       if (entry.trim().length < 10) return; // Skip very short entries
       
-      const entryLines = entry.split('\n');
+//       const entryLines = entry.split('\n');
       
-      // Extract project title (usually at the beginning of the entry)
-      let title = '';
-      let description = '';
-      let technologies: string[] = [];
-      let link = '';
+//       // Extract project title (usually at the beginning of the entry)
+//       let title = '';
+//       let description = '';
+//       let technologies: string[] = [];
+//       let link = '';
       
-      // First line often contains project title
-      if (entryLines.length > 0) {
-        title = entryLines[0].trim();
-      }
+//       // First line often contains project title
+//       if (entryLines.length > 0) {
+//         title = entryLines[0].trim();
+//       }
       
-      // Extract technologies using common patterns
-      const techRegex = /\b(?:using|with|built with|developed with|technologies:|tech stack:)\s+([^.]+)/i;
-      const techMatch = entry.match(techRegex);
-      if (techMatch && techMatch[1]) {
-        technologies = techMatch[1].split(/,|\sand\s|\s\|\s/).map(tech => tech.trim());
-      } else {
-        // Try to extract technologies by looking for common programming terms
-        const commonTechTerms = [
-          'JavaScript', 'TypeScript', 'React', 'Angular', 'Vue', 'Next.js', 'Node.js', 'Express',
-          'Python', 'Django', 'Flask', 'Java', 'Spring', 'C#', '.NET', 'PHP', 'Laravel',
-          'SQL', 'PostgreSQL', 'MySQL', 'MongoDB', 'Firebase', 'Redux', 'GraphQL', 'REST API',
-          'HTML', 'CSS', 'SASS', 'SCSS', 'Tailwind', 'Bootstrap', 'Material UI', 'AWS', 'Azure'
-        ];
+//       // Extract technologies using common patterns
+//       const techRegex = /\b(?:using|with|built with|developed with|technologies:|tech stack:)\s+([^.]+)/i;
+//       const techMatch = entry.match(techRegex);
+//       if (techMatch && techMatch[1]) {
+//         technologies = techMatch[1].split(/,|\sand\s|\s\|\s/).map(tech => tech.trim());
+//       } else {
+//         // Try to extract technologies by looking for common programming terms
+//         const commonTechTerms = [
+//           'JavaScript', 'TypeScript', 'React', 'Angular', 'Vue', 'Next.js', 'Node.js', 'Express',
+//           'Python', 'Django', 'Flask', 'Java', 'Spring', 'C#', '.NET', 'PHP', 'Laravel',
+//           'SQL', 'PostgreSQL', 'MySQL', 'MongoDB', 'Firebase', 'Redux', 'GraphQL', 'REST API',
+//           'HTML', 'CSS', 'SASS', 'SCSS', 'Tailwind', 'Bootstrap', 'Material UI', 'AWS', 'Azure'
+//         ];
         
-        commonTechTerms.forEach(tech => {
-          const techRegExp = new RegExp(`\\b${tech.replace(/\./g, '\\.')}\\b`, 'i');
-          if (techRegExp.test(entry)) {
-            technologies.push(tech);
-          }
-        });
-      }
+//         commonTechTerms.forEach(tech => {
+//           const techRegExp = new RegExp(`\\b${tech.replace(/\./g, '\\.')}\\b`, 'i');
+//           if (techRegExp.test(entry)) {
+//             technologies.push(tech);
+//           }
+//         });
+//       }
       
-      // Look for URLs/links
-      const urlRegex = /(https?:\/\/[^\s]+)/g;
-      const urlMatch = entry.match(urlRegex);
-      if (urlMatch) {
-        link = urlMatch[0];
-      }
+//       // Look for URLs/links
+//       const urlRegex = /(https?:\/\/[^\s]+)/g;
+//       const urlMatch = entry.match(urlRegex);
+//       if (urlMatch) {
+//         link = urlMatch[0];
+//       }
       
-      // Extract description by combining non-header, non-technology lines
-      const descLines: string[] = [];
-      let inDescription = false;
+//       // Extract description by combining non-header, non-technology lines
+//       const descLines: string[] = [];
+//       let inDescription = false;
       
-      entryLines.forEach((line, i) => {
-        // Skip the title line
-        if (i === 0) return;
+//       entryLines.forEach((line, i) => {
+//         // Skip the title line
+//         if (i === 0) return;
         
-        const trimmedLine = line.trim();
+//         const trimmedLine = line.trim();
         
-        // Skip empty lines or lines that appear to be technology lists
-        if (!trimmedLine || /\b(?:using|with|built with|developed with|technologies:|tech stack:)\s+/i.test(trimmedLine)) {
-          return;
-        }
+//         // Skip empty lines or lines that appear to be technology lists
+//         if (!trimmedLine || /\b(?:using|with|built with|developed with|technologies:|tech stack:)\s+/i.test(trimmedLine)) {
+//           return;
+//         }
         
-        // Detect bullet points as part of the description
-        if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-') || trimmedLine.startsWith('*') || 
-            /^\d+\./.test(trimmedLine)) {
-          inDescription = true;
-          descLines.push(trimmedLine.replace(/^[•\-*\d\.]+\s*/, ''));
-        } 
-        // Include other lines that might be part of description
-        else if (i > 0) {
-          inDescription = true;
-          descLines.push(trimmedLine);
-        }
-      });
+//         // Detect bullet points as part of the description
+//         if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-') || trimmedLine.startsWith('*') || 
+//             /^\d+\./.test(trimmedLine)) {
+//           inDescription = true;
+//           descLines.push(trimmedLine.replace(/^[•\-*\d\.]+\s*/, ''));
+//         } 
+//         // Include other lines that might be part of description
+//         else if (i > 0) {
+//           inDescription = true;
+//           descLines.push(trimmedLine);
+//         }
+//       });
       
-      description = descLines.join(' ').trim();
+//       description = descLines.join(' ').trim();
       
-      // Only add projects that have at least a title
-      if (title) {
-        projectsData.push({
-          title,
-          description: description || 'Project description',
-          technologies: technologies.length > 0 ? technologies : ['Various technologies'],
-          link: link || undefined
-        });
-      }
-    });
-  }
+//       // Only add projects that have at least a title
+//       if (title) {
+//         projectsData.push({
+//           title,
+//           description: description || 'Project description',
+//           technologies: technologies.length > 0 ? technologies : ['Various technologies'],
+//           link: link || undefined
+//         });
+//       }
+//     });
+//   }
   
-  return projectsData;
-}
+//   return projectsData;
+// }
 
 /**
  * Extract contact information from resume
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function extractContactInfo(resumeText: string, sections: Record<string, { start: number, end: number }>) {
   // Initialize with empty values
   let email = '';

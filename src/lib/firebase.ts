@@ -1,9 +1,9 @@
 "use client";
 
-import { initializeApp, getApps } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { nanoid } from 'nanoid';
 
 // Your web app's Firebase configuration
@@ -30,10 +30,10 @@ const isFirebaseConfigValid = () => {
 };
 
 // Initialize Firebase - only if config is valid and it hasn't been initialized already
-let app;
-let auth;
-let db;
-let storage;
+let app: FirebaseApp;
+let auth: Auth;
+let db: Firestore;
+let storage: FirebaseStorage;
 
 if (isFirebaseConfigValid()) {
   try {
@@ -51,19 +51,9 @@ if (isFirebaseConfigValid()) {
     console.log('Firebase initialized successfully');
   } catch (error) {
     console.error('Error initializing Firebase:', error);
-    // Create dummy objects to prevent errors
-    app = null;
-    auth = null;
-    db = null;
-    storage = null;
   }
 } else {
   console.warn('Firebase configuration is missing or invalid. Firebase features will not work.');
-  // Create dummy objects to prevent errors
-  app = null;
-  auth = null;
-  db = null;
-  storage = null;
 }
 
 // Generate a random short URL hash

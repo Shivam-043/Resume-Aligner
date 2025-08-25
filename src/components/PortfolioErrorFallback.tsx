@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 interface PortfolioErrorFallbackProps {
   error?: string;
@@ -20,7 +21,7 @@ export default function PortfolioErrorFallback({ error, shortUrl }: PortfolioErr
         </h2>
         
         <p className="text-center text-gray-600 mb-6">
-          We're sorry, but the portfolio you're looking for is currently unavailable.
+          We&apos;re sorry, but the portfolio you&apos;re looking for is currently unavailable.
         </p>
 
         {error && (
@@ -45,12 +46,12 @@ export default function PortfolioErrorFallback({ error, shortUrl }: PortfolioErr
         )}
 
         <div className="flex justify-center space-x-4">
-          <a 
+          <Link 
             href="/"
             className="inline-flex items-center px-5 py-2 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Return to Home
-          </a>
+          </Link>
         </div>
       </div>
     </div>

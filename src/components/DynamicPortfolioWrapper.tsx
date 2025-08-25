@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import React, { useEffect } from 'react';
 import '../client/src/portfolio.css'; // Import the portfolio-specific CSS
+import { PortfolioData } from '@/lib/portfolio-context';
 
 // Dynamically import the portfolio component to avoid SSR issues with client-specific code
 const DynamicPortfolio = dynamic(() => import('../client/src/pages/portfolio'), {
@@ -10,7 +11,7 @@ const DynamicPortfolio = dynamic(() => import('../client/src/pages/portfolio'), 
 });
 
 interface DynamicPortfolioWrapperProps {
-  portfolioData: any;
+  portfolioData: PortfolioData;
   isHostedVersion?: boolean;
   hostInfo?: {
     title: string;

@@ -1,16 +1,21 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
+import { PortfolioData } from './portfolio-context';
 
 // Initialize Firebase Admin if it hasn't been initialized yet
-let app;
-let db;
-let storage;
+let db: Firestore | null = null;
+
+interface ServiceAccount {
+  projectId?: string;
+  privateKey?: string;
+  clientEmail?: string;
+}
 
 try {
   if (!getApps().length) {
     // Use environment variables for the service account or load from a JSON file
-    const serviceAccount = {
+    const serviceAccount: ServiceAccount = {
       projectId: process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
       privateKey: process.env.FIREBASE_PRIVATE_KEY 
         ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') 
@@ -20,25 +25,24 @@ try {
 
     // If we have full service account credentials
     if (serviceAccount.privateKey && serviceAccount.clientEmail) {
-      app = initializeApp({
-        credential: cert(serviceAccount as any),
+      initializeApp({
+        credential: cert(serviceAccount as Record<string, string>),
         storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
       });
     } else {
       // Fall back to default credentials (e.g., when deployed on Firebase hosting)
-      app = initializeApp({
+      initializeApp({
         projectId: serviceAccount.projectId,
         storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
       });
     }
     
     db = getFirestore();
-    storage = getStorage();
+    // Initialize storage but we don't use it directly in this file
+    getStorage();
     console.log('Firebase Admin SDK initialized successfully');
   } else {
-    app = getApps()[0];
     db = getFirestore();
-    storage = getStorage();
   }
 } catch (error) {
   console.error("Error initializing Firebase Admin:", error);
@@ -51,8 +55,24 @@ interface HostedPortfolio {
   description: string;
   createdAt: string;
   updatedAt: string;
-  portfolioData: any;
+  portfolioData: PortfolioData;
   dataUrl?: string;
+  views?: number;
+  userId?: string;
+  public?: boolean;
+}
+
+interface FirestorePortfolioDoc {
+  id: string;
+  shortUrl: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  dataUrl?: string;
+  views?: number;
+  userId?: string;
+  public?: boolean;
 }
 
 // Server-side function to get a hosted portfolio by its short URL
@@ -77,11 +97,11 @@ export async function getHostedPortfolioServer(shortUrl: string): Promise<Hosted
       return null;
     }
     
-    const portfolioDoc = portfoliosSnapshot.docs[0].data() as any;
+    const portfolioDoc = portfoliosSnapshot.docs[0].data() as FirestorePortfolioDoc;
     console.log(`Found portfolio document: ${portfolioDoc.id}`);
     
     // Get the portfolio data by fetching from the dataUrl
-    let portfolioData;
+    let portfolioData: PortfolioData;
     try {
       if (!portfolioDoc.dataUrl) {
         throw new Error('Portfolio data URL is missing');
@@ -99,10 +119,9 @@ export async function getHostedPortfolioServer(shortUrl: string): Promise<Hosted
     } catch (error) {
       console.error("Error fetching portfolio data:", error);
       portfolioData = { 
-        error: "Failed to load portfolio data",
         personalInfo: {
           name: portfolioDoc.title || "Portfolio Owner",
-          title: "Professional Portfolio",
+          jobTitle: "Professional Portfolio",
           summary: "This portfolio is currently experiencing technical difficulties. Please try again later."
         }
       };

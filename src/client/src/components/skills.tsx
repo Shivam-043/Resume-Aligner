@@ -11,6 +11,15 @@ interface SkillCategory {
   items: SkillItem[];
 }
 
+interface ParsedPortfolioData {
+  skills?: SkillCategoryInput[];
+}
+
+interface SkillCategoryInput {
+  category: string;
+  items: Array<string | SkillItem>;
+}
+
 // Default fallback skills data with percentages
 const defaultSkillsData: SkillCategory[] = [
   {
@@ -64,10 +73,10 @@ export default function Skills() {
     try {
       const portfolioData = localStorage.getItem('resumeVibe_portfolioData');
       if (portfolioData) {
-        const parsedData = JSON.parse(portfolioData);
+        const parsedData = JSON.parse(portfolioData) as ParsedPortfolioData;
         if (parsedData.skills && Array.isArray(parsedData.skills) && parsedData.skills.length > 0) {
           // Convert data format if needed - from array of strings to array of objects with percentages
-          const formattedSkills = parsedData.skills.map((category: any) => {
+          const formattedSkills = parsedData.skills.map((category: SkillCategoryInput) => {
             return {
               category: category.category,
               items: category.items.map((item: string | SkillItem) => {
@@ -125,7 +134,7 @@ export default function Skills() {
         observer.unobserve(item);
       });
     };
-  }, []);
+  }, [skillsData.length]); // Added skillsData.length dependency
 
   // Associate icons with skill categories
   const getCategoryIcon = (category: string) => {

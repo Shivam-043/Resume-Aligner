@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import Link from "next/link";
 import Navigation from "../components/navigation";
 import Hero from "../components/hero";
 import About from "../components/about";
@@ -11,7 +12,7 @@ import { HostPortfolio } from "../../../components/HostPortfolio";
 import { usePortfolio } from "../../../lib/portfolio-context";
 
 interface PortfolioProps {
-  portfolioData?: any;
+  portfolioData?: Record<string, unknown>;
   isHostedVersion?: boolean;
   hostInfo?: {
     title: string;
@@ -103,14 +104,14 @@ export default function Portfolio({ portfolioData: propData, isHostedVersion = f
         <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
           <h2 className="text-2xl font-bold mb-4 text-gray-800">No Portfolio Data Found</h2>
           <p className="text-gray-600 mb-6">
-            It looks like you haven't generated a portfolio yet, or your portfolio data has been lost.
+            It looks like you haven&apos;t generated a portfolio yet, or your portfolio data has been lost.
           </p>
-          <a
+          <Link
             href="/"
             className="inline-block px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
           >
             Return to Resume Aligner
-          </a>
+          </Link>
         </div>
       </div>
     );

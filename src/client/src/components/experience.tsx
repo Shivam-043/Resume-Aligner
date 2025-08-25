@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Rocket, Smartphone, Shield, Users, Settings, TrendingUp, Layers, Palette, Award, Star, Target, Zap, ChevronDown, ChevronUp, MapPin, Calendar, Briefcase } from "lucide-react";
+import { Rocket, Smartphone, Shield, Users, Settings, TrendingUp, Layers, Palette, ChevronDown, ChevronUp, MapPin, Calendar, Briefcase } from "lucide-react";
 
 // Define color themes for different experiences
 const colorThemes = [
@@ -37,16 +37,16 @@ const colorThemes = [
   }
 ];
 
-// Define icons for achievements
+// Define icons for achievements with proper key props
 const achievementIcons = [
-  <Rocket className="w-4 h-4 flex-shrink-0 mt-1" />,
-  <Smartphone className="w-4 h-4 flex-shrink-0 mt-1" />,
-  <Shield className="w-4 h-4 flex-shrink-0 mt-1" />,
-  <Users className="w-4 h-4 flex-shrink-0 mt-1" />,
-  <Settings className="w-4 h-4 flex-shrink-0 mt-1" />,
-  <TrendingUp className="w-4 h-4 flex-shrink-0 mt-1" />,
-  <Layers className="w-4 h-4 flex-shrink-0 mt-1" />,
-  <Palette className="w-4 h-4 flex-shrink-0 mt-1" />,
+  <Rocket key="rocket" className="w-4 h-4 flex-shrink-0 mt-1" />,
+  <Smartphone key="smartphone" className="w-4 h-4 flex-shrink-0 mt-1" />,
+  <Shield key="shield" className="w-4 h-4 flex-shrink-0 mt-1" />,
+  <Users key="users" className="w-4 h-4 flex-shrink-0 mt-1" />,
+  <Settings key="settings" className="w-4 h-4 flex-shrink-0 mt-1" />,
+  <TrendingUp key="trendingUp" className="w-4 h-4 flex-shrink-0 mt-1" />,
+  <Layers key="layers" className="w-4 h-4 flex-shrink-0 mt-1" />,
+  <Palette key="palette" className="w-4 h-4 flex-shrink-0 mt-1" />,
 ];
 
 interface ExperienceItem {

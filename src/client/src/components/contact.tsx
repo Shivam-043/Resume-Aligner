@@ -79,7 +79,7 @@ export default function Contact() {
             <span className="gradient-text">Contact</span> Me
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto" data-testid="contact-description">
-            Have a project in mind or want to discuss opportunities? I'd love to hear from you!
+            Have a project in mind or want to discuss opportunities? I&apos;d love to hear from you!
           </p>
         </div>
         
@@ -131,7 +131,7 @@ export default function Contact() {
                   </svg>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Message Sent!</h3>
-                <p className="text-gray-600">Thank you for reaching out. I'll get back to you soon.</p>
+                <p className="text-gray-600">Thank you for reaching out. I&apos;ll get back to you soon.</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6" data-testid="contact-form">
@@ -192,7 +192,7 @@ export default function Contact() {
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[var(--portfolio-primary)] focus:border-transparent"
-                    placeholder="I'd like to discuss a project..."
+                    placeholder="I&apos;d like to discuss a project..."
                     data-testid="contact-message"
                   ></textarea>
                 </div>

@@ -698,7 +698,6 @@ export default function MatchingResults({ result, onReset, jobUrl, resumeText = 
             <div className="space-y-6">
               <PortfolioGenerator 
                 resumeText={resumeText}
-                jobDescription={jobDescription}
               />
               
               {(!resumeText || !jobDescription) && (

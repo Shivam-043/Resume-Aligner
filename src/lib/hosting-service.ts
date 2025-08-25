@@ -4,6 +4,7 @@ import { doc, setDoc, getDoc, updateDoc, arrayUnion, collection, query, where, g
 import { ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage, generateShortUrlHash } from './firebase';
 import { getCurrentUser } from './auth-service';
+import { PortfolioData } from './portfolio-context';
 
 // Check if Firebase is initialized
 const isFirebaseInitialized = () => {
@@ -17,11 +18,26 @@ interface HostedPortfolio {
   description: string;
   createdAt: string;
   updatedAt: string;
-  portfolioData: any;
+  portfolioData: PortfolioData;
+  views?: number;
+  public?: boolean;
+  dataUrl?: string;
+  userId?: string;
+}
+
+interface PortfolioReference {
+  id: string;
+  shortUrl: string;
+  title: string;
+  createdAt: string;
 }
 
 // Save a portfolio to Firebase and generate a shareable URL
-export const hostPortfolio = async (portfolioData: any, title: string, description: string = '') => {
+export const hostPortfolio = async (
+  portfolioData: PortfolioData, 
+  title: string, 
+  description: string = ''
+): Promise<{ id: string; shortUrl: string; shareableUrl: string }> => {
   if (!isFirebaseInitialized()) {
     throw new Error('Firebase is not initialized. Check your Firebase configuration in the .env.local file.');
   }
@@ -38,7 +54,7 @@ export const hostPortfolio = async (portfolioData: any, title: string, descripti
     const portfolioId = `${user.uid}_${shortUrl}`;
     
     // Create portfolio document in Firestore
-    const portfolioDoc: any = {
+    const portfolioDoc: Omit<HostedPortfolio, 'portfolioData'> = {
       id: portfolioId,
       userId: user.uid,
       shortUrl,
@@ -67,27 +83,24 @@ export const hostPortfolio = async (portfolioData: any, title: string, descripti
     const userDocRef = doc(db, 'users', user.uid);
     const userDocSnapshot = await getDoc(userDocRef);
     
+    const portfolioRef: PortfolioReference = {
+      id: portfolioId,
+      shortUrl,
+      title,
+      createdAt: new Date().toISOString(),
+    };
+    
     if (!userDocSnapshot.exists()) {
       // Create user document if it doesn't exist
       await setDoc(userDocRef, {
         email: user.email,
         createdAt: new Date().toISOString(),
-        hostedPortfolios: [{
-          id: portfolioId,
-          shortUrl,
-          title,
-          createdAt: new Date().toISOString(),
-        }]
+        hostedPortfolios: [portfolioRef]
       });
     } else {
       // Update existing user document
       await updateDoc(userDocRef, {
-        hostedPortfolios: arrayUnion({
-          id: portfolioId,
-          shortUrl,
-          title,
-          createdAt: new Date().toISOString(),
-        })
+        hostedPortfolios: arrayUnion(portfolioRef)
       });
     }
     
@@ -118,7 +131,7 @@ export const getHostedPortfolio = async (shortUrl: string): Promise<HostedPortfo
       return null;
     }
     
-    const portfolioDoc = querySnapshot.docs[0].data() as any;
+    const portfolioDoc = querySnapshot.docs[0].data() as Omit<HostedPortfolio, 'portfolioData'>;
     
     // Get the portfolio data from Storage
     const portfolioDataRef = ref(storage, `portfolios/${portfolioDoc.id}/data.json`);
@@ -144,7 +157,7 @@ export const getHostedPortfolio = async (shortUrl: string): Promise<HostedPortfo
 };
 
 // Get all portfolios for the current user
-export const getUserPortfolios = async () => {
+export const getUserPortfolios = async (): Promise<PortfolioReference[]> => {
   if (!isFirebaseInitialized()) {
     throw new Error('Firebase is not initialized. Check your Firebase configuration in the .env.local file.');
   }
@@ -162,7 +175,7 @@ export const getUserPortfolios = async () => {
     }
     
     const userData = userDoc.data();
-    return userData.hostedPortfolios || [];
+    return (userData.hostedPortfolios || []) as PortfolioReference[];
   } catch (error) {
     console.error('Error getting user portfolios:', error);
     throw error;
@@ -170,7 +183,7 @@ export const getUserPortfolios = async () => {
 };
 
 // Delete a hosted portfolio
-export const deleteHostedPortfolio = async (portfolioId: string) => {
+export const deleteHostedPortfolio = async (portfolioId: string): Promise<boolean> => {
   if (!isFirebaseInitialized()) {
     throw new Error('Firebase is not initialized. Check your Firebase configuration in the .env.local file.');
   }
@@ -193,7 +206,7 @@ export const deleteHostedPortfolio = async (portfolioId: string) => {
     
     // Filter out the portfolio to be deleted
     const updatedPortfolios = (userData.hostedPortfolios || []).filter(
-      (portfolio: any) => portfolio.id !== portfolioId
+      (portfolio: PortfolioReference) => portfolio.id !== portfolioId
     );
     
     // Update the user document

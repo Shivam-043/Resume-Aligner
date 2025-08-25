@@ -16,6 +16,23 @@ export async function OPTIONS() {
   })
 }
 
+// Define interfaces for the PDF parser data
+interface PDFPage {
+  Texts: PDFText[];
+}
+
+interface PDFText {
+  R: PDFTextR[];
+}
+
+interface PDFTextR {
+  T: string;
+}
+
+interface PDFData {
+  Pages: PDFPage[];
+}
+
 /**
  * Extract text from PDF using pdf2json
  * @param fileBuffer PDF file buffer
@@ -25,7 +42,7 @@ async function extractPdfText(fileBuffer: ArrayBuffer): Promise<{ text: string; 
   return new Promise((resolve, reject) => {
     const pdfParser = new PDFParser();
     
-    pdfParser.on('pdfParser_dataReady', (pdfData: any) => {
+    pdfParser.on('pdfParser_dataReady', (pdfData: PDFData) => {
       try {
         // Extract text from each page
         let extractedText = '';
@@ -66,13 +83,14 @@ async function extractPdfText(fileBuffer: ArrayBuffer): Promise<{ text: string; 
       }
     });
     
-    pdfParser.on('pdfParser_dataError', (errData: any) => {
-      reject(new Error(`PDF parsing error: ${errData.parserError}`));
+    pdfParser.on('pdfParser_dataError', (errMsg: Record<"parserError", Error>) => {
+      const error = errMsg.parserError;
+      reject(new Error(`PDF parsing error: ${error?.message || 'Unknown error'}`));
     });
     
     // Parse the PDF from the buffer
-    const uint8Array = new Uint8Array(fileBuffer);
-    pdfParser.parseBuffer(uint8Array);
+    const buffer = Buffer.from(fileBuffer);
+    pdfParser.parseBuffer(buffer);
   });
 }
 
@@ -117,10 +135,11 @@ export async function POST(request: NextRequest) {
       fileSize: file.size,
     });
     
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error processing resume upload:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: `Failed to process resume: ${error.message || 'Unknown error'}` },
+      { error: `Failed to process resume: ${errorMessage}` },
       { status: 500 }
     );
   }

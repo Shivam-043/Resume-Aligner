@@ -5,13 +5,13 @@ import DynamicPortfolioWrapper from '../../../components/DynamicPortfolioWrapper
 import PortfolioErrorFallback from '../../../components/PortfolioErrorFallback';
 
 interface PortfolioPageProps {
-  params: {
+  params: Promise<{
     shortUrl: string;
-  };
+  }>;
 }
 
 export default async function PortfolioPage({ params }: PortfolioPageProps) {
-  const { shortUrl } = params;
+  const { shortUrl } = await params;
   
   try {
     // Fetch the hosted portfolio data using the server-side function
@@ -46,9 +46,8 @@ export default async function PortfolioPage({ params }: PortfolioPageProps) {
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: PortfolioPageProps) {
-  // Await params before destructuring
-  const resolvedParams = await Promise.resolve(params);
-  const { shortUrl } = resolvedParams;
+  // Await params to get shortUrl
+  const { shortUrl } = await params;
   
   try {
     const portfolioData = await getHostedPortfolioServer(shortUrl);
@@ -71,7 +70,7 @@ export async function generateMetadata({ params }: PortfolioPageProps) {
   } catch (error) {
     return {
       title: 'Portfolio Unavailable',
-      description: 'This portfolio is currently unavailable.',
+      description: `This portfolio is currently unavailable : ${error}`,
     };
   }
 }

@@ -3,21 +3,74 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 
 // Define types for better TypeScript support
+export interface PersonalInfo {
+  name: string;
+  jobTitle: string;
+  summary: string;
+  profileImage?: string;
+  location?: string;
+  email?: string;
+  phone?: string;
+  website?: string;
+  linkedin?: string;
+  github?: string;
+}
+
+export interface ExperienceItem {
+  company: string;
+  role: string;
+  duration: string;
+  location: string;
+  achievements: string[];
+}
+
+export interface EducationItem {
+  institution: string;
+  degree: string;
+  duration: string;
+  location: string;
+  details: string[];
+}
+
+export interface SkillItem {
+  name: string;
+  percentage: number;
+}
+
+export interface SkillCategory {
+  category: string;
+  items: SkillItem[];
+}
+
+export interface ProjectItem {
+  title: string;
+  description: string;
+  technologies: string[];
+  link?: string;
+  image?: string;
+}
+
+export interface LeadershipItem {
+  title: string;
+  description: string;
+  icon: "trophy" | "users" | "chart" | "target" | "award" | "lightbulb";
+}
+
+export interface ContactInfo {
+  email: string;
+  phone: string;
+  location: string;
+}
+
 export interface PortfolioData {
-  personalInfo?: {
-    name: string;
-    jobTitle: string;
-    summary: string;
-    profileImage?: string;
-    [key: string]: any;
-  };
-  experience?: any[];
-  education?: any[];
-  skills?: any[];
-  projects?: any[];
-  leadership?: any[];
-  contact?: any;
-  [key: string]: any;
+  personalInfo?: PersonalInfo;
+  experience?: ExperienceItem[];
+  education?: EducationItem[];
+  skills?: SkillCategory[];
+  projects?: ProjectItem[];
+  leadership?: LeadershipItem[];
+  contact?: ContactInfo;
+  [key: string]: unknown;
 }
 
 export interface GenerationState {

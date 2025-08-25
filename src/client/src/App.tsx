@@ -5,7 +5,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "./components/ui/toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
 import Portfolio from "./pages/portfolio";
-import NotFound from "./pages/not-found";
 import "./index.css"; // Import main CSS
 import "./portfolio.css"; // Import portfolio-specific CSS
 
@@ -28,19 +27,36 @@ const useHashLocation = () => {
   // Return hash location and a function to update it
   return [
     hash,
-    (to) => {
+    (to: string): void => {
       window.location.hash = to;
     }
-  ];
+  ] as [string, (to: string) => void];
 };
 
 function Router() {
+  // Define default props for Portfolio component
+  const portfolioProps = {
+    portfolioData: {}, // Replace with actual data
+    isHostedVersion: false,
+    hostInfo: {
+      title: "",
+      description: "",
+      createdAt: ""
+    }
+  };
+
   return (
     <WouterRouter hook={useHashLocation}>
       <Switch>
-        <Route path="/" component={Portfolio} />
-        <Route path="/resumevibe" component={Portfolio} />
-        <Route path="*" component={Portfolio} />
+        <Route path="/">
+          {() => <Portfolio {...portfolioProps} />}
+        </Route>
+        <Route path="/resumevibe">
+          {() => <Portfolio {...portfolioProps} />}
+        </Route>
+        <Route path="*">
+          {() => <Portfolio {...portfolioProps} />}
+        </Route>
       </Switch>
     </WouterRouter>
   );

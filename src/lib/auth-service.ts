@@ -7,14 +7,30 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
-  User
+  User,
+  Auth
 } from 'firebase/auth';
-import { auth, db } from './firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { auth as firebaseAuth, db as firebaseDb } from './firebase';
+import { doc, setDoc, getDoc, Firestore } from 'firebase/firestore';
+
+// Type-safe getters for Firebase instances
+const getAuth = (): Auth => {
+  if (!firebaseAuth) {
+    throw new Error('Firebase Auth is not initialized. Check your Firebase configuration in the .env.local file.');
+  }
+  return firebaseAuth;
+};
+
+const getDb = (): Firestore => {
+  if (!firebaseDb) {
+    throw new Error('Firebase Firestore is not initialized. Check your Firebase configuration in the .env.local file.');
+  }
+  return firebaseDb;
+};
 
 // Check if Firebase is initialized
 const isFirebaseInitialized = () => {
-  return auth !== null && db !== null;
+  return firebaseAuth !== null && firebaseDb !== null;
 };
 
 // Create a new user with email and password
@@ -24,6 +40,8 @@ export const signUp = async (email: string, password: string) => {
   }
   
   try {
+    const auth = getAuth();
+    const db = getDb();
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     // Create a user document in Firestore
     await setDoc(doc(db, 'users', userCredential.user.uid), {
@@ -32,7 +50,7 @@ export const signUp = async (email: string, password: string) => {
       hostedPortfolios: []
     });
     return userCredential.user;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error signing up:', error);
     throw error;
   }
@@ -45,9 +63,10 @@ export const signIn = async (email: string, password: string) => {
   }
   
   try {
+    const auth = getAuth();
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     return userCredential.user;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error signing in:', error);
     throw error;
   }
@@ -60,6 +79,8 @@ export const signInWithGoogle = async () => {
   }
   
   try {
+    const auth = getAuth();
+    const db = getDb();
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
     
@@ -74,7 +95,7 @@ export const signInWithGoogle = async () => {
     }
     
     return userCredential.user;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error signing in with Google:', error);
     throw error;
   }
@@ -87,8 +108,9 @@ export const signOut = async () => {
   }
   
   try {
+    const auth = getAuth();
     await firebaseSignOut(auth);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error signing out:', error);
     throw error;
   }
@@ -100,6 +122,7 @@ export const getCurrentUser = (): User | null => {
     console.warn('Firebase is not initialized. Cannot get current user.');
     return null;
   }
+  const auth = getAuth();
   return auth.currentUser;
 };
 
@@ -110,5 +133,6 @@ export const onAuthChange = (callback: (user: User | null) => void) => {
     callback(null);
     return () => {};
   }
+  const auth = getAuth();
   return onAuthStateChanged(auth, callback);
 };

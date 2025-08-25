@@ -9,12 +9,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Alert, AlertDescription, AlertTitle } from '../client/src/components/ui/alert';
 import { AuthModal } from './AuthModal';
 import { useAuth } from '../lib/auth-context';
-import { getCurrentUser } from '../lib/auth-service';
 import { hostPortfolio, getUserPortfolios, deleteHostedPortfolio } from '../lib/hosting-service';
 import { Check, Copy, Globe, Share2, Trash2, AlertCircle } from 'lucide-react';
+import { PortfolioData } from '../lib/portfolio-context';
 
 interface HostPortfolioProps {
-  portfolioData: any;
+  portfolioData: PortfolioData;
+}
+
+interface PortfolioReference {
+  id: string;
+  shortUrl: string;
+  title: string;
+  createdAt: string;
 }
 
 export const HostPortfolio: React.FC<HostPortfolioProps> = ({ portfolioData }) => {
@@ -26,7 +33,7 @@ export const HostPortfolio: React.FC<HostPortfolioProps> = ({ portfolioData }) =
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [hostingResult, setHostingResult] = useState<{id: string; shortUrl: string; shareableUrl: string} | null>(null);
-  const [userPortfolios, setUserPortfolios] = useState<any[]>([]);
+  const [userPortfolios, setUserPortfolios] = useState<PortfolioReference[]>([]);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
@@ -38,7 +45,8 @@ export const HostPortfolio: React.FC<HostPortfolioProps> = ({ portfolioData }) =
       if (authError) {
         setConfigError('Firebase configuration is missing or invalid. Please check your .env.local file for Firebase settings.');
       }
-    } catch (err: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
       setConfigError('Firebase configuration is missing or invalid. Please check your .env.local file for Firebase settings.');
     }
   }, [authError]);
@@ -62,8 +70,9 @@ export const HostPortfolio: React.FC<HostPortfolioProps> = ({ portfolioData }) =
       const result = await hostPortfolio(portfolioData, title, description);
       setHostingResult(result);
       setIsHostingModalOpen(false);
-    } catch (err: any) {
-      setError(err.message || 'Failed to host portfolio');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to host portfolio';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -75,8 +84,9 @@ export const HostPortfolio: React.FC<HostPortfolioProps> = ({ portfolioData }) =
       const portfolios = await getUserPortfolios();
       setUserPortfolios(portfolios);
       setIsMyPortfoliosOpen(true);
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch portfolios');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch portfolios';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -87,8 +97,9 @@ export const HostPortfolio: React.FC<HostPortfolioProps> = ({ portfolioData }) =
     try {
       await deleteHostedPortfolio(portfolioId);
       setUserPortfolios(userPortfolios.filter(portfolio => portfolio.id !== portfolioId));
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete portfolio');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete portfolio';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -228,9 +239,9 @@ export const HostPortfolio: React.FC<HostPortfolioProps> = ({ portfolioData }) =
           </DialogHeader>
           
           <div className="py-4">
-            {userPortfolios.length === 0 ? (
+            {isMyPortfoliosOpen && userPortfolios.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">
-                You haven't hosted any portfolios yet
+                You haven&apos;t hosted any portfolios yet
               </p>
             ) : (
               <div className="space-y-4">
