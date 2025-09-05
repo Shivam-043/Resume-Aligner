@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export async function POST(request: NextRequest) {
   try {
-    const { resumeText, jobDescription, userName } = await request.json();
+    const { resumeText, jobDescription, userName, userApiKey } = await request.json();
 
     if (!resumeText || !jobDescription) {
       return NextResponse.json(
@@ -12,8 +12,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Initialize the Gemini API client
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
+    // Use user's API key if provided, otherwise fall back to server's key
+    const apiKey = userApiKey || process.env.GOOGLE_API_KEY;
+    
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'No API key available. Please configure your Gemini API key in settings.' },
+        { status: 400 }
+      );
+    }
+
+    // Initialize the Gemini API client with the appropriate API key
+    const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // Prepare the prompt for Gemini

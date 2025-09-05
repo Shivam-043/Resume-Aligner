@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/lib/theme-context";
 import { AuthProvider } from "@/lib/auth-context";
 import { PortfolioProvider } from "@/lib/portfolio-context";
 import { CoverLetterProvider } from "@/lib/cover-letter-context";
+import { UserSettingsProvider } from "@/lib/user-settings-context";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 
 const geistSans = Geist({
@@ -144,11 +145,13 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <AuthProvider>
-            <PortfolioProvider>
-              <CoverLetterProvider>
-                {children}
-              </CoverLetterProvider>
-            </PortfolioProvider>
+            <UserSettingsProvider>
+              <PortfolioProvider>
+                <CoverLetterProvider>
+                  {children}
+                </CoverLetterProvider>
+              </PortfolioProvider>
+            </UserSettingsProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

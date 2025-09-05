@@ -6,13 +6,10 @@ import { AnalysisResult } from '@/types'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60 // 60 seconds timeout
 
-// Initialize the Gemini AI client
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!)
-
 export async function POST(request: NextRequest) {
   try {
     console.log('Analysis API called')
-    const { resume, jobDescription, jobUrl } = await request.json()
+    const { resume, jobDescription, jobUrl, userApiKey } = await request.json()
 
     if (!resume || !jobDescription) {
       console.error('Missing required parameters')
@@ -22,7 +19,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Use user's API key if provided, otherwise fall back to server's key
+    const apiKey = userApiKey || process.env.GOOGLE_API_KEY;
+    
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'No API key available. Please configure your Gemini API key in settings.' },
+        { status: 400 }
+      );
+    }
+
     console.log('Parameters received, initializing Gemini model')
+    // Initialize the Gemini AI client with the appropriate API key
+    const genAI = new GoogleGenerativeAI(apiKey)
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
     const prompt = `

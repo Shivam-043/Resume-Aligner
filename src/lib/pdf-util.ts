@@ -84,9 +84,15 @@ Personal Portfolio
  * @param resumeText The extracted text from the resume
  * @param jobDescription The job description text
  * @param userName Optional user name to personalize the cover letter
+ * @param userApiKey Optional user's Gemini API key
  * @returns A generated cover letter
  */
-export async function generateCoverLetter(resumeText: string, jobDescription: string, userName?: string): Promise<string> {
+export async function generateCoverLetter(
+  resumeText: string, 
+  jobDescription: string, 
+  userName?: string,
+  userApiKey?: string
+): Promise<string> {
   try {
     // Call the Gemini API through our backend route
     const response = await fetch('/api/generate-cover-letter', {
@@ -97,13 +103,14 @@ export async function generateCoverLetter(resumeText: string, jobDescription: st
       body: JSON.stringify({
         resumeText,
         jobDescription,
-        userName
+        userName,
+        userApiKey // Pass the user's API key
       })
     });
     
     if (!response.ok) {
-      const errorData = await response.text();
-      throw new Error(`Failed to generate cover letter: ${errorData}`);
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to generate cover letter');
     }
     
     const data = await response.json();

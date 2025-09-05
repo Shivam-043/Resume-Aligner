@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { generateCoverLetter } from '@/lib/pdf-util'
 import { Download, FileText, Check, Copy, PenSquare } from 'lucide-react'
 import { useCoverLetter } from '@/lib/cover-letter-context'
+import { useUserSettings } from '@/lib/user-settings-context'
 
 interface CoverLetterGeneratorProps {
   resumeText: string
@@ -21,6 +22,9 @@ export default function CoverLetterGenerator({ resumeText, jobDescription, userN
     coverLetterState,
     updateCoverLetterState
   } = useCoverLetter();
+
+  // Get user settings including API key
+  const { settings, isApiKeyConfigured } = useUserSettings();
 
   const [isEditing, setIsEditing] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
@@ -60,7 +64,13 @@ export default function CoverLetterGenerator({ resumeText, jobDescription, userN
           progressMessage: 'Creating personalized cover letter...'
         });
         
-        const generatedCoverLetter = await generateCoverLetter(resumeText, jobDescription, userName)
+        // Pass the user's API key to the generation function
+        const generatedCoverLetter = await generateCoverLetter(
+          resumeText, 
+          jobDescription, 
+          userName,
+          settings.geminiApiKey // Pass user's API key
+        )
         setCoverLetterText(generatedCoverLetter)
         setEditableCoverLetter(generatedCoverLetter)
         
@@ -84,7 +94,7 @@ export default function CoverLetterGenerator({ resumeText, jobDescription, userN
       });
       alert('Error generating cover letter. Please try again.')
     }
-  }, [resumeText, jobDescription, userName, setIsGenerating, updateCoverLetterState, setCoverLetterText]);
+  }, [resumeText, jobDescription, userName, settings.geminiApiKey, setIsGenerating, updateCoverLetterState, setCoverLetterText]);
 
   const handleEditToggle = () => {
     if (isEditing) {
@@ -154,6 +164,14 @@ export default function CoverLetterGenerator({ resumeText, jobDescription, userN
           <p className="text-gray-600 mb-6">
             Generate a personalized cover letter based on your resume and the job description.
           </p>
+          
+          {!isApiKeyConfigured() && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+              <p className="text-amber-800 text-sm">
+                <strong>API Key Required:</strong> Please configure your Gemini API key in settings to use AI-powered cover letter generation.
+              </p>
+            </div>
+          )}
           
           <button
             onClick={handleGenerateCoverLetter}

@@ -1,11 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ResumeUploader from '@/components/ResumeUploader'
 import JobUrlInput from '@/components/JobUrlInput'
 import MatchingResults from '@/components/MatchingResults'
 import Header from '@/components/Header'
 import FeatureCard from '@/components/FeatureCard'
+import Chatbot from '@/components/Chatbot'
+import { TourGuide } from '@/components/TourGuide'
+import { ApiSettings } from '@/components/ApiSettings'
+import { useUserSettings } from '@/lib/user-settings-context'
+import { usePortfolio } from '@/lib/portfolio-context'
 import { AnalysisResult } from '@/types'
 import { Zap, Target, CheckCircle, Star, Users, TrendingUp, Shield } from 'lucide-react'
 
@@ -15,10 +20,31 @@ export default function Home() {
   const [jobUrl, setJobUrl] = useState<string>('')
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  
+  // Tour guide and API settings state
+  const [showTourGuide, setShowTourGuide] = useState(false)
+  const [showApiSettings, setShowApiSettings] = useState(false)
+  const { settings, loading: settingsLoading, isApiKeyConfigured } = useUserSettings()
+  
+  // Portfolio context for sharing data
+  const { setJobDescription: setContextJobDescription, setResumeText: setContextResumeText } = usePortfolio()
+
+  // Show tour guide for new users
+  useEffect(() => {
+    if (!settingsLoading && settings.showTourGuide && !settings.hasCompletedOnboarding) {
+      setShowTourGuide(true)
+    }
+  }, [settings, settingsLoading])
 
   const handleAnalyze = async () => {
     if (!resumeText || !jobDescription) {
       alert('Please upload a resume and provide a job description.')
+      return
+    }
+
+    // Check if user has configured API key, if not, show API settings
+    if (!isApiKeyConfigured()) {
+      setShowApiSettings(true)
       return
     }
 
@@ -32,19 +58,30 @@ export default function Home() {
         body: JSON.stringify({
           resume: resumeText,
           jobDescription: jobDescription,
-          jobUrl: jobUrl
+          jobUrl: jobUrl,
+          userApiKey: settings.geminiApiKey // Pass user's API key
         }),
       })
 
       if (!response.ok) {
-        throw new Error('Analysis failed')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Analysis failed')
       }
 
       const result = await response.json()
       setAnalysisResult(result)
+      
+      // Save resume text and job description to shared context for LaTeX enhancement
+      setContextResumeText(resumeText)
+      setContextJobDescription(jobDescription)
+      
     } catch (error) {
       console.error('Analysis error:', error)
-      alert('Analysis failed. Please try again.')
+      if (error instanceof Error && error.message.includes('API key')) {
+        setShowApiSettings(true)
+      } else {
+        alert('Analysis failed. Please try again.')
+      }
     } finally {
       setIsAnalyzing(false)
     }
@@ -57,8 +94,43 @@ export default function Home() {
     setAnalysisResult(null)
   }
 
+  const handleOpenApiSettings = () => {
+    setShowApiSettings(true)
+  }
+
+  const handleCloseTourGuide = () => {
+    setShowTourGuide(false)
+  }
+
+  const handleCloseApiSettings = () => {
+    setShowApiSettings(false)
+  }
+
+  // Don't render anything while settings are loading
+  if (settingsLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
   return (
     <>
+      {/* Tour Guide Modal */}
+      <TourGuide 
+        isOpen={showTourGuide}
+        onClose={handleCloseTourGuide}
+        onOpenApiSettings={handleOpenApiSettings}
+      />
+
+      {/* API Settings Modal */}
+      <ApiSettings
+        isOpen={showApiSettings}
+        onClose={handleCloseApiSettings}
+        showSkipOption={!isApiKeyConfigured()}
+      />
+
       {/* Structured Data for Homepage */}
       <script
         type="application/ld+json"
@@ -254,6 +326,12 @@ export default function Home() {
           </main>
         </div>
       </div>
+
+      {/* Chatbot - Available globally */}
+      <Chatbot 
+        resumeText={resumeText}
+        jobDescription={jobDescription}
+      />
     </>
   )
 }

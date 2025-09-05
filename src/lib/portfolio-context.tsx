@@ -92,6 +92,8 @@ interface PortfolioContextType {
   updateGenerationState: (state: Partial<GenerationState>) => void;
   resumeText: string | null;
   setResumeText: (text: string | null) => void;
+  jobDescription: string | null;
+  setJobDescription: (description: string | null) => void;
   profileImage: string | null;
   setProfileImage: (image: string | null) => void;
   clearPortfolioData: () => void;
@@ -115,6 +117,7 @@ export const usePortfolio = () => {
 const STORAGE_KEYS = {
   PORTFOLIO_DATA: 'resumeVibe_portfolioData',
   RESUME_TEXT: 'resumeVibe_resumeText',
+  JOB_DESCRIPTION: 'resumeVibe_jobDescription',
   GENERATION_STATE: 'resumeVibe_generationState',
   PROFILE_IMAGE: 'resumeVibe_profileImage'
 };
@@ -125,6 +128,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState('');
   const [resumeText, setResumeTextState] = useState<string | null>(null);
+  const [jobDescription, setJobDescriptionState] = useState<string | null>(null);
   const [profileImage, setProfileImageState] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [generationState, setGenerationState] = useState<GenerationState>({
@@ -147,6 +151,12 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       const savedResumeText = localStorage.getItem(STORAGE_KEYS.RESUME_TEXT);
       if (savedResumeText) {
         setResumeTextState(savedResumeText);
+      }
+      
+      // Load job description
+      const savedJobDescription = localStorage.getItem(STORAGE_KEYS.JOB_DESCRIPTION);
+      if (savedJobDescription) {
+        setJobDescriptionState(savedJobDescription);
       }
       
       // Load generation state
@@ -191,6 +201,16 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     }
   };
   
+  // Save job description to localStorage whenever it changes
+  const setJobDescription = (description: string | null) => {
+    setJobDescriptionState(description);
+    if (description) {
+      localStorage.setItem(STORAGE_KEYS.JOB_DESCRIPTION, description);
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.JOB_DESCRIPTION);
+    }
+  };
+  
   // Update generation state
   const updateGenerationState = (state: Partial<GenerationState>) => {
     const newState = { ...generationState, ...state, lastUpdated: Date.now() };
@@ -212,6 +232,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   const clearPortfolioData = () => {
     setPortfolioData(null);
     setResumeText(null);
+    setJobDescription(null);
     setIsGenerating(false);
     setGenerationProgress('');
     setProfileImage(null);
@@ -239,6 +260,8 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
         updateGenerationState,
         resumeText,
         setResumeText,
+        jobDescription,
+        setJobDescription,
         profileImage,
         setProfileImage,
         clearPortfolioData,
