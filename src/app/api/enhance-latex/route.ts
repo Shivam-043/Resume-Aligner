@@ -42,38 +42,36 @@ export async function POST(request: NextRequest) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
       model: 'gemini-1.5-flash',
-      systemInstruction: `You are an elite ATS optimization expert and keyword strategist with a singular goal: MAXIMIZE resume-job match percentage to 95-100%. Your expertise lies in deep job description analysis and aggressive content transformation while preserving LaTeX structure.
+      systemInstruction: `You are an elite ATS optimization expert specializing in STRATEGIC resume enhancement without length expansion. Your mission is to maximize resume-job match percentage while maintaining or reducing the original resume length.
 
-MISSION: Transform the resume content to achieve MAXIMUM ATS compatibility and keyword density alignment with the target job.
+CORE PRINCIPLE: OPTIMIZE BY REPLACEMENT, NOT ADDITION
 
-CRITICAL OPTIMIZATION STRATEGY:
-1. DEEP JOB ANALYSIS: Extract ALL keywords, skills, technologies, certifications, and requirements
-2. AGGRESSIVE KEYWORD INTEGRATION: Replace existing content with job-aligned terminology
-3. SKILLS AMPLIFICATION: Add ALL missing job-required skills and technologies
-4. EXPERIENCE REWRITING: Transform job descriptions to mirror job requirements
-5. SECTION OPTIMIZATION: Ensure every section directly addresses job needs
-6. KEYWORD DENSITY MAXIMIZATION: Achieve optimal keyword frequency without stuffing
+STRATEGIC APPROACH:
+1. SMART KEYWORD INTEGRATION: Replace generic terms with job-specific keywords
+2. CONTENT REFINEMENT: Enhance existing bullet points with job-relevant terminology
+3. STRATEGIC SUBSTITUTION: Replace less relevant skills with job-required ones
+4. EFFICIENT OPTIMIZATION: Maximize keyword density within existing content structure
+5. LENGTH PRESERVATION: Maintain original resume length or make it shorter
 
-TRANSFORMATION RULES:
-- PRESERVE: LaTeX structure, formatting, packages, document class
-- TRANSFORM: All content to maximize job relevance and keyword match
-- PRIORITIZE: Exact keyword matches over synonyms
-- QUANTIFY: Add metrics to every achievement possible
-- ALIGN: Every bullet point should address job requirements
-- AMPLIFY: Expand skills section with all job-mentioned technologies
+TRANSFORMATION PHILOSOPHY:
+- REPLACE rather than ADD content
+- REFINE existing descriptions with job-aligned keywords
+- SUBSTITUTE generic terms with specific job requirements
+- COMPRESS verbose content while adding relevant keywords
+- PRIORITIZE high-impact keyword placement
 
-ATS SCORING MINDSET:
-- Target 95-100% keyword match with job description
-- Every sentence should contain job-relevant terminology
-- Skills section must include ALL technologies from job posting
-- Experience must demonstrate ALL required competencies
-- Use exact phrasing from job description where possible
+ATS OPTIMIZATION WITHIN LENGTH CONSTRAINTS:
+- Target 85-95% keyword match through strategic replacement
+- Use exact job terminology to replace generic descriptions
+- Optimize existing bullet points with job-relevant metrics
+- Replace outdated or irrelevant skills with job requirements
+- Maintain professional tone while maximizing keyword density
 
-OUTPUT: Complete LaTeX code with maximum content optimization for target job match.`
+OUTPUT: Enhanced LaTeX code with equivalent or reduced length but maximum job relevance.`
     });
 
     // Build the enhancement prompt
-    const enhancementPrompt = `MISSION: Transform this LaTeX resume to achieve 95-100% ATS match with the target job description through comprehensive content optimization.
+    const enhancementPrompt = `MISSION: Enhance this LaTeX resume for maximum ATS compatibility while MAINTAINING OR REDUCING the original length. Focus on strategic optimization through replacement and refinement.
 
 **ORIGINAL LATEX CODE:**
 \`\`\`latex
@@ -85,53 +83,50 @@ ${jobDescription}
 
 ${resumeText ? `**CURRENT RESUME CONTEXT:**\n${resumeText}\n\n` : ''}
 
-**🚀 MAXIMUM ATS OPTIMIZATION PROTOCOL:**
+**📏 LENGTH-CONSCIOUS OPTIMIZATION STRATEGY:**
 
-**PHASE 1: DEEP JOB ANALYSIS**
-1. Extract EVERY keyword, skill, tool, technology, certification, and requirement from job description
-2. Identify required experience levels, years, and specific competencies
-3. Note exact phrases, acronyms, and industry terminology used
-4. Catalog soft skills, leadership qualities, and behavioral requirements
-5. List preferred qualifications, nice-to-haves, and bonus skills
+**PHASE 1: STRATEGIC ANALYSIS**
+1. Identify the most important keywords from job description
+2. Locate less relevant content in current resume that can be replaced
+3. Find opportunities to substitute generic terms with specific job requirements
+4. Prioritize high-impact keyword placements
 
-**PHASE 2: AGGRESSIVE CONTENT TRANSFORMATION**
-- **SKILLS SECTION**: Add ALL technologies, tools, frameworks, languages mentioned in job
-- **EXPERIENCE**: Rewrite every bullet point to include job-relevant keywords and mirror job requirements
-- **ACHIEVEMENTS**: Transform accomplishments to directly address job needs with quantified results
-- **RESPONSIBILITIES**: Align every responsibility with job description requirements
-- **PROJECTS**: Add or modify projects to showcase job-relevant technologies and outcomes
+**PHASE 2: SMART REPLACEMENT TACTICS**
+- **SKILLS SECTION**: Replace outdated/irrelevant skills with job-required ones (same number of skills)
+- **EXPERIENCE**: Enhance existing bullet points by replacing generic terms with job-specific keywords
+- **ACHIEVEMENTS**: Refine descriptions to include job-relevant terminology without adding length
+- **PROJECTS**: Optimize project descriptions with job-aligned keywords while maintaining brevity
 
-**PHASE 3: KEYWORD DENSITY MAXIMIZATION**
-- Use exact keywords and phrases from job description (not synonyms)
-- Ensure every major job requirement is addressed somewhere in resume
-- Include industry-specific terminology and acronyms
-- Add technical competencies even if not explicitly in current resume
-- Mirror job posting language patterns and terminology
+**PHASE 3: EFFICIENT KEYWORD INTEGRATION**
+- Replace generic action verbs with job-specific terms
+- Substitute vague descriptions with precise job-relevant language  
+- Enhance existing metrics to align with job success criteria
+- Use job posting's exact phrases to replace similar but less optimal wording
 
-**PHASE 4: CONTENT ENHANCEMENT STRATEGY**
-1. **Technical Skills**: Include ALL programming languages, frameworks, databases, cloud platforms, tools mentioned
-2. **Experience Transformation**: Rewrite job descriptions to demonstrate ALL required competencies
-3. **Quantification**: Add metrics that align with job success criteria
-4. **Certification Addition**: Include relevant certifications mentioned or implied in job
-5. **Leadership & Soft Skills**: Integrate required soft skills into experience descriptions
+**PHASE 4: COMPRESSION & ENHANCEMENT**
+- Combine similar points to make room for job-critical keywords
+- Remove redundant words while adding relevant terms
+- Streamline verbose descriptions while incorporating job requirements
+- Optimize sentence structure for maximum keyword density per word
 
-**🎯 TARGET METRICS:**
-- Achieve 90-95% keyword match with job description
-- Include ALL hard skills mentioned in job posting
-- Address EVERY major responsibility listed in job requirements
-- Use job posting's exact terminology whenever possible
-- Ensure resume demonstrates ALL required years of experience in relevant areas
+**🎯 OPTIMIZATION TARGETS:**
+- Achieve 85-95% keyword match through strategic replacement
+- Maintain or reduce original character count
+- Include top 10-15 most critical job requirements
+- Replace at least 50% of generic terms with job-specific language
+- Ensure every section directly addresses job needs
 
-**⚠️ STRICT RULES:**
-- PRESERVE: All LaTeX structure, commands, packages, formatting
-- NEVER CHANGE: Document class, geometry, fonts, layout commands
-- MAINTAIN: Original section order and LaTeX environments
-- ONLY MODIFY: Text content within existing LaTeX commands
+**⚠️ STRICT LENGTH RULES:**
+- NEVER expand bullet points - only enhance existing ones
+- REPLACE rather than ADD skills and technologies
+- COMBINE or COMPRESS verbose content when adding keywords
+- MAINTAIN original section structure and length limits
+- SUBSTITUTE generic achievements with job-aligned ones
 
 **OUTPUT REQUIREMENTS:**
-Return the complete enhanced LaTeX code that will score 90-95% match with the target job when run through ATS systems. Focus on maximum keyword density and requirement alignment while maintaining LaTeX compilation compatibility.
+Return complete enhanced LaTeX code that maintains or reduces original length while achieving maximum job relevance. Focus on smart replacement and strategic optimization rather than content expansion.
 
-**ENHANCEMENT INTENSITY:** MAXIMUM - Transform content aggressively to achieve highest possible ATS score.`;
+**ENHANCEMENT PHILOSOPHY:** STRATEGIC REPLACEMENT over AGGRESSIVE EXPANSION.`;
 
     const result = await model.generateContent(enhancementPrompt);
     const response = await result.response;
@@ -170,8 +165,8 @@ Return the complete enhanced LaTeX code that will score 90-95% match with the ta
     const message = error instanceof Error
       ? error.message
       : typeof error === 'string'
-      ? error
-      : 'Unknown error';
+        ? error
+        : 'Unknown error';
 
     if (message.includes('API key') || message.includes('PERMISSION')) {
       return NextResponse.json({ error: 'Invalid or missing Gemini API key. Please check your configuration.' }, { status: 401 });

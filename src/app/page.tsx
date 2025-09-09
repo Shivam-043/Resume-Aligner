@@ -20,12 +20,12 @@ export default function Home() {
   const [jobUrl, setJobUrl] = useState<string>('')
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
-  
+
   // Tour guide and API settings state
   const [showTourGuide, setShowTourGuide] = useState(false)
   const [showApiSettings, setShowApiSettings] = useState(false)
   const { settings, loading: settingsLoading, isApiKeyConfigured } = useUserSettings()
-  
+
   // Portfolio context for sharing data
   const { setJobDescription: setContextJobDescription, setResumeText: setContextResumeText } = usePortfolio()
 
@@ -70,11 +70,11 @@ export default function Home() {
 
       const result = await response.json()
       setAnalysisResult(result)
-      
+
       // Save resume text and job description to shared context for LaTeX enhancement
       setContextResumeText(resumeText)
       setContextJobDescription(jobDescription)
-      
+
     } catch (error) {
       console.error('Analysis error:', error)
       if (error instanceof Error && error.message.includes('API key')) {
@@ -118,7 +118,7 @@ export default function Home() {
   return (
     <>
       {/* Tour Guide Modal */}
-      <TourGuide 
+      <TourGuide
         isOpen={showTourGuide}
         onClose={handleCloseTourGuide}
         onOpenApiSettings={handleOpenApiSettings}
@@ -156,7 +156,7 @@ export default function Home() {
 
       <div className="min-h-screen relative">
         {/* Background image */}
-        <div 
+        <div
           className="fixed inset-0 z-0 pointer-events-none"
           style={{
             backgroundImage: 'url("/BG.svg")',
@@ -167,10 +167,10 @@ export default function Home() {
           }}
           aria-hidden="true"
         ></div>
-        
+
         <div className="relative z-10">
           <Header />
-          
+
           <main className="container mx-auto px-4 py-8 max-w-6xl">
             {!analysisResult ? (
               <div className="space-y-16">
@@ -182,7 +182,7 @@ export default function Home() {
                   <p className="text-xl opacity-75 max-w-4xl mx-auto mb-8">
                     Transform your job search with our intelligent resume analyzer. Upload your resume and job posting URL to get instant ATS compatibility scores, tailored optimization recommendations, AI-generated cover letters, and professional portfolio creation tools. Join thousands of job seekers who landed their dream jobs 3x faster.
                   </p>
-                  
+
                   {/* Trust Indicators */}
                   <div className="flex justify-center items-center gap-8 text-sm opacity-80 mb-8">
                     <div className="flex items-center gap-2">
@@ -206,22 +206,22 @@ export default function Home() {
                     Powerful Resume Optimization Features
                   </h2>
                   <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <FeatureCard 
+                    <FeatureCard
                       icon={<Zap className="h-6 w-6 text-white" />}
                       title="Lightning-Fast AI Analysis"
                       description="Get comprehensive resume analysis in under 30 seconds. Our advanced AI algorithms scan for keyword optimization, ATS compatibility, and industry-specific requirements."
                     />
-                    <FeatureCard 
+                    <FeatureCard
                       icon={<Target className="h-6 w-6 text-white" />}
                       title="Precision Job Matching"
                       description="Advanced matching algorithm analyzes job requirements vs. your skills. Get detailed gap analysis and actionable recommendations to increase your interview chances by 60%."
                     />
-                    <FeatureCard 
+                    <FeatureCard
                       icon={<Shield className="h-6 w-6 text-white" />}
                       title="ATS Optimization & Scoring"
                       description="Ensure your resume passes Applicant Tracking Systems. Get detailed ATS compatibility scores and specific formatting recommendations for maximum visibility."
                     />
-                    <FeatureCard 
+                    <FeatureCard
                       icon={<CheckCircle className="h-6 w-6 text-white" />}
                       title="Complete Career Toolkit"
                       description="Beyond resume optimization: generate personalized cover letters, create professional portfolios, and get project recommendations to strengthen your profile."
@@ -265,12 +265,12 @@ export default function Home() {
                     Start Optimizing Your Resume Now
                   </h2>
                   <div className="grid lg:grid-cols-2 gap-8">
-                    <ResumeUploader 
+                    <ResumeUploader
                       onResumeExtracted={setResumeText}
                       resumeText={resumeText}
                     />
-                    
-                    <JobUrlInput 
+
+                    <JobUrlInput
                       onJobExtracted={setJobDescription}
                       jobDescription={jobDescription}
                       jobUrl={jobUrl}
@@ -315,7 +315,7 @@ export default function Home() {
                 </section>
               </div>
             ) : (
-              <MatchingResults 
+              <MatchingResults
                 result={analysisResult}
                 onReset={handleReset}
                 jobUrl={jobUrl}
@@ -328,7 +328,7 @@ export default function Home() {
       </div>
 
       {/* Chatbot - Available globally */}
-      <Chatbot 
+      <Chatbot
         resumeText={resumeText}
         jobDescription={jobDescription}
       />

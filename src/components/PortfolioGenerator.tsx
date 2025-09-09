@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Button } from '../client/src/components/ui/button';
 import { transformResumeToPortfolioData } from '@/lib/portfolio-util';
 import { Alert, AlertTitle, AlertDescription } from '../client/src/components/ui/alert';
-import { Loader2, Upload, FileText, Download, Code, Zap, CheckCircle } from 'lucide-react';
+import { Loader2, Upload, Download, Code, Zap, CheckCircle } from 'lucide-react';
 import { HostPortfolio } from './HostPortfolio';
 import PortfolioPreview from './PortfolioPreview';
 import { usePortfolio } from '@/lib/portfolio-context';
@@ -17,8 +17,8 @@ interface PortfolioGeneratorProps {
 
 export default function PortfolioGenerator({ resumeText, jobDescription }: PortfolioGeneratorProps) {
   // Use the enhanced context for shared state
-  const { 
-    portfolioData, 
+  const {
+    portfolioData,
     setPortfolioData,
     isGenerating,
     setIsGenerating,
@@ -36,12 +36,12 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
 
   // Get user settings for API key
   const { settings } = useUserSettings();
-  
+
   const [generationComplete, setGenerationComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(true);
-  
+
   // LaTeX Enhancement State
   const [showLatexSection, setShowLatexSection] = useState(false);
   const [latexCode, setLatexCode] = useState('');
@@ -49,10 +49,10 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
   const [isEnhancingLatex, setIsEnhancingLatex] = useState(false);
   const [latexError, setLatexError] = useState<string | null>(null);
   const [latexEnhancementComplete, setLatexEnhancementComplete] = useState(false);
-  
+
   // Use context job description if available, otherwise fall back to prop
   const activeJobDescription = contextJobDescription || jobDescription;
-  
+
   // Save the current resume text and job description to context for persistence
   useEffect(() => {
     if (resumeText) {
@@ -62,7 +62,7 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
       setContextJobDescription(jobDescription);
     }
   }, [resumeText, jobDescription, contextJobDescription, setResumeText, setContextJobDescription]);
-  
+
   // Set generation complete state based on the context data
   useEffect(() => {
     if (generationState.stage === 'completed' && portfolioData) {
@@ -86,7 +86,7 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
     console.log('latexCode length:', latexCode.length);
     console.log('jobDescription:', activeJobDescription ? `Present (${activeJobDescription.length} chars)` : 'Missing');
     console.log('jobDescription value:', activeJobDescription);
-    
+
     if (!latexCode.trim()) {
       setLatexError('Please enter your LaTeX code first.');
       return;
@@ -129,7 +129,7 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
       console.log('Enhancement successful:', data);
       setEnhancedLatexCode(data.enhancedLatex);
       setLatexEnhancementComplete(true);
-      
+
     } catch (err) {
       console.error('LaTeX enhancement error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to enhance LaTeX code';
@@ -157,7 +157,7 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
   // Copy Enhanced LaTeX to Clipboard
   const handleCopyLatex = async () => {
     if (!enhancedLatexCode) return;
-    
+
     try {
       await navigator.clipboard.writeText(enhancedLatexCode);
       // Could add a toast notification here
@@ -197,38 +197,38 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
         progress: 30,
         progressMessage: 'Analyzing your resume with AI...'
       });
-      
+
       const personalizedPortfolioData = await transformResumeToPortfolioData(resumeText);
-      
+
       // Add the profile image to the personalized data
       if (personalizedPortfolioData.personalInfo) {
         personalizedPortfolioData.personalInfo.profileImage = profileImage;
       }
-      
+
       setGenerationProgress('Creating your personalized portfolio...');
       updateGenerationState({
         stage: 'generating',
         progress: 70,
         progressMessage: 'Creating your personalized portfolio...'
       });
-      
+
       // Save the personalized portfolio data in global context
       setPortfolioData(personalizedPortfolioData);
       setHasUnsavedChanges(false);
-      
+
       setGenerationProgress('Finalizing your portfolio...');
       updateGenerationState({
         stage: 'completed',
         progress: 100,
         progressMessage: 'Portfolio personalization complete!'
       });
-      
+
       // Give the system a moment to save the data
       setTimeout(() => {
         setIsGenerating(false);
         setGenerationComplete(true);
         setGenerationProgress('');
-        
+
         // Open portfolio in a new tab
         window.open('/resumevibe', '_blank');
       }, 1000);
@@ -237,7 +237,7 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
       setGenerationProgress('');
       setError('Failed to personalize the template. Please try again.');
       console.error('Template personalization error:', err);
-      
+
       updateGenerationState({
         stage: 'error',
         progress: 0,
@@ -250,27 +250,27 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     setImageError(null);
     const file = event.target.files?.[0];
-    
+
     if (!file) return;
-    
+
     // Check file type
     if (!file.type.startsWith('image/')) {
       setImageError('Please upload an image file (JPEG, PNG, etc.)');
       return;
     }
-    
+
     // Check file size (limit to 5MB)
     if (file.size > 5 * 1024 * 1024) {
       setImageError('Image size should be less than 5MB');
       return;
     }
-    
+
     const reader = new FileReader();
     reader.onload = (e) => {
       setProfileImage(e.target?.result as string);
     };
     reader.readAsDataURL(file);
-    
+
     // Mark that we have unsaved changes
     setHasUnsavedChanges(true);
   };
@@ -304,38 +304,38 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
         progress: 30,
         progressMessage: 'Enhancing resume with AI-powered analysis...'
       });
-      
+
       const generatedPortfolioData = await transformResumeToPortfolioData(resumeText);
-      
+
       // Add the profile image to the personal info
       if (generatedPortfolioData.personalInfo) {
         generatedPortfolioData.personalInfo.profileImage = profileImage;
       }
-      
+
       setGenerationProgress('Creating professional portfolio...');
       updateGenerationState({
         stage: 'generating',
         progress: 70,
         progressMessage: 'Creating professional portfolio...'
       });
-      
+
       // Save the portfolio data in global context
       setPortfolioData(generatedPortfolioData);
       setHasUnsavedChanges(false);
-      
+
       setGenerationProgress('Finalizing your portfolio...');
       updateGenerationState({
         stage: 'completed',
         progress: 100,
         progressMessage: 'Portfolio generation complete!'
       });
-      
+
       // Give the system a moment to save the data
       setTimeout(() => {
         setIsGenerating(false);
         setGenerationComplete(true);
         setGenerationProgress('');
-        
+
         // Open portfolio in a new tab
         window.open('/resumevibe', '_blank');
       }, 1000);
@@ -344,7 +344,7 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
       setGenerationProgress('');
       setError('Failed to generate portfolio. Please try again.');
       console.error('Portfolio generation error:', err);
-      
+
       updateGenerationState({
         stage: 'error',
         progress: 0,
@@ -353,13 +353,13 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
       });
     }
   }, [
-    resumeText, 
-    profileImage, 
-    setIsGenerating, 
-    setError, 
-    setGenerationProgress, 
-    updateGenerationState, 
-    setPortfolioData, 
+    resumeText,
+    profileImage,
+    setIsGenerating,
+    setError,
+    setGenerationProgress,
+    updateGenerationState,
+    setPortfolioData,
     setHasUnsavedChanges,
     setGenerationComplete
   ]);
@@ -381,8 +381,8 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
   useEffect(() => {
     const resumeGeneration = async () => {
       // If we were in the middle of generating and have resume text, resume the process
-      if (['started', 'analyzing', 'generating'].includes(generationState.stage) && 
-          resumeText && profileImage) {
+      if (['started', 'analyzing', 'generating'].includes(generationState.stage) &&
+        resumeText && profileImage) {
         try {
           // Only proceed with generation if we haven't completed it yet
           if (generationState.stage !== 'completed' && !portfolioData) {
@@ -393,15 +393,15 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
         }
       }
     };
-    
+
     if (!portfolioData) {
       resumeGeneration();
     }
   }, [
-    generationState.stage, 
-    resumeText, 
-    profileImage, 
-    portfolioData, 
+    generationState.stage,
+    resumeText,
+    profileImage,
+    portfolioData,
     handleGeneratePortfolio
   ]); // Added all required dependencies
 
@@ -437,9 +437,9 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
             <p className="text-blue-800 font-medium">{generationProgress}</p>
           </div>
           <div className="mt-3 bg-blue-100 rounded-full h-2.5 overflow-hidden">
-            <div 
-              className="bg-blue-600 h-2.5 rounded-full animate-pulse" 
-              style={{width: `${generationState.progress}%`}}
+            <div
+              className="bg-blue-600 h-2.5 rounded-full animate-pulse"
+              style={{ width: `${generationState.progress}%` }}
             ></div>
           </div>
         </div>
@@ -466,10 +466,10 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
             <div className="mb-4">
               <h4 className="text-md font-semibold text-purple-800 mb-2">🚀 Boost Your ATS Score by 80%!</h4>
               <p className="text-sm text-gray-700 mb-4">
-                Paste your LaTeX resume code below and our AI will enhance it specifically for the job description, 
+                Paste your LaTeX resume code below and our AI will enhance it specifically for the job description,
                 optimizing keywords, formatting, and structure to maximize ATS compatibility.
               </p>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div className="flex items-center space-x-2 text-sm text-green-700">
                   <CheckCircle className="h-4 w-4" />
@@ -587,7 +587,7 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
             {!activeJobDescription && (
               <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                 <p className="text-sm text-yellow-800">
-                  <strong>Note:</strong> Job description is required for LaTeX enhancement. 
+                  <strong>Note:</strong> Job description is required for LaTeX enhancement.
                   Please start a new analysis with both your resume and a job description to use this feature.
                 </p>
               </div>
@@ -614,13 +614,13 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
         <p className="text-gray-600 text-sm mb-4">
           Please upload a professional headshot for your portfolio. This image will be displayed prominently on your portfolio page.
         </p>
-        
+
         <div className="flex flex-col items-center space-y-4">
           {profileImage ? (
             <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-blue-500">
-              <Image 
-                src={profileImage} 
-                alt="Profile preview" 
+              <Image
+                src={profileImage}
+                alt="Profile preview"
                 className="object-cover"
                 fill
                 sizes="128px"
@@ -632,24 +632,24 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
               <Upload className="h-10 w-10 text-gray-400" />
             </div>
           )}
-          
+
           <label className="cursor-pointer">
             <span className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium text-sm">
               {profileImage ? 'Change Image' : 'Select Image'}
             </span>
-            <input 
-              type="file" 
-              accept="image/*" 
-              className="hidden" 
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
               onChange={handleImageUpload}
               disabled={isGenerating}
             />
           </label>
-          
+
           {imageError && (
             <p className="text-red-500 text-sm">{imageError}</p>
           )}
-          
+
           {profileImage && (
             <Button
               variant="outline"
@@ -670,11 +670,11 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
           <h3 className="text-lg font-semibold mb-3">Quick Start Options</h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Quick Preview Card */}
-            <PortfolioPreview 
+            <PortfolioPreview
               onConfirm={handleUseSampleData}
               disabled={!profileImage || isGenerating}
             />
-            
+
             {/* Custom Generation Card */}
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-dashed border-green-300 rounded-lg p-6">
               <div className="flex items-center space-x-2 mb-3">
@@ -715,9 +715,8 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
           <Button
             onClick={portfolioData ? handleRegeneratePortfolio : handleGeneratePortfolio}
             disabled={isGenerating || !profileImage}
-            className={`px-6 py-3 font-semibold rounded-lg ${
-              isGenerating || !profileImage ? 'bg-blue-400' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
-            } text-white transition-colors shadow-md hover:shadow-lg`}
+            className={`px-6 py-3 font-semibold rounded-lg ${isGenerating || !profileImage ? 'bg-blue-400' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+              } text-white transition-colors shadow-md hover:shadow-lg`}
           >
             {isGenerating ? (
               <>
@@ -731,13 +730,13 @@ export default function PortfolioGenerator({ resumeText, jobDescription }: Portf
           </Button>
         </div>
       )}
-      
+
       {generationComplete && portfolioData && (
         <div className="mt-8">
           <HostPortfolio portfolioData={portfolioData} />
         </div>
       )}
-      
+
       <p className="text-xs text-gray-500 mt-4 text-center">
         Powered by Gemini 2.5 Pro AI to create high-quality, professional portfolios
       </p>

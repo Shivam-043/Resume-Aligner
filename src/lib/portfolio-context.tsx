@@ -137,7 +137,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     progressMessage: '',
     lastUpdated: Date.now()
   });
-  
+
   // Load all data from localStorage on mount
   useEffect(() => {
     try {
@@ -146,19 +146,19 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       if (savedPortfolioData) {
         setPortfolioDataState(JSON.parse(savedPortfolioData));
       }
-      
+
       // Load resume text
       const savedResumeText = localStorage.getItem(STORAGE_KEYS.RESUME_TEXT);
       if (savedResumeText) {
         setResumeTextState(savedResumeText);
       }
-      
+
       // Load job description
       const savedJobDescription = localStorage.getItem(STORAGE_KEYS.JOB_DESCRIPTION);
       if (savedJobDescription) {
         setJobDescriptionState(savedJobDescription);
       }
-      
+
       // Load generation state
       const savedGenerationState = localStorage.getItem(STORAGE_KEYS.GENERATION_STATE);
       if (savedGenerationState) {
@@ -170,7 +170,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
           setGenerationProgress(parsedState.progressMessage);
         }
       }
-      
+
       // Load profile image
       const savedProfileImage = localStorage.getItem(STORAGE_KEYS.PROFILE_IMAGE);
       if (savedProfileImage) {
@@ -180,7 +180,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       console.error('Error loading data from localStorage:', error);
     }
   }, []);
-  
+
   // Save portfolio data to localStorage whenever it changes
   const setPortfolioData = (data: PortfolioData | null) => {
     setPortfolioDataState(data);
@@ -190,7 +190,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem(STORAGE_KEYS.PORTFOLIO_DATA);
     }
   };
-  
+
   // Save resume text to localStorage whenever it changes
   const setResumeText = (text: string | null) => {
     setResumeTextState(text);
@@ -200,7 +200,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem(STORAGE_KEYS.RESUME_TEXT);
     }
   };
-  
+
   // Save job description to localStorage whenever it changes
   const setJobDescription = (description: string | null) => {
     setJobDescriptionState(description);
@@ -210,14 +210,14 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem(STORAGE_KEYS.JOB_DESCRIPTION);
     }
   };
-  
+
   // Update generation state
   const updateGenerationState = (state: Partial<GenerationState>) => {
     const newState = { ...generationState, ...state, lastUpdated: Date.now() };
     setGenerationState(newState);
     localStorage.setItem(STORAGE_KEYS.GENERATION_STATE, JSON.stringify(newState));
   };
-  
+
   // Save profile image to localStorage whenever it changes
   const setProfileImage = (image: string | null) => {
     setProfileImageState(image);
@@ -227,7 +227,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem(STORAGE_KEYS.PROFILE_IMAGE);
     }
   };
-  
+
   // Clear all portfolio-related data
   const clearPortfolioData = () => {
     setPortfolioData(null);
@@ -242,15 +242,15 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       progress: 0,
       progressMessage: '',
     });
-    
+
     // Remove all keys from localStorage
     Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
   };
 
   return (
-    <PortfolioContext.Provider 
-      value={{ 
-        portfolioData, 
+    <PortfolioContext.Provider
+      value={{
+        portfolioData,
         setPortfolioData,
         isGenerating,
         setIsGenerating,

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../client/src/components/ui/dialog';
 import { Button } from '../client/src/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../client/src/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../client/src/components/ui/card';
 import { Badge } from '../client/src/components/ui/badge';
 import { useUserSettings } from '../lib/user-settings-context';
 import { 
@@ -33,10 +33,10 @@ const tourSteps = [
       <div className="space-y-4">
         <p>
           Resume Aligner uses AI to help you create perfect resumes, analyze job matches, 
-          and generate cover letters. Let's get you set up in just a few minutes!
+          and generate cover letters. Let&apos;s get you set up in just a few minutes!
         </p>
         <div className="bg-blue-50 p-4 rounded-lg">
-          <h4 className="font-semibold mb-2">What you'll learn:</h4>
+          <h4 className="font-semibold mb-2">What you&apos;ll learn:</h4>
           <ul className="space-y-1 text-sm">
             <li>• How to set up your free Google Gemini API key</li>
             <li>• How to upload and analyze your resume</li>
@@ -54,7 +54,7 @@ const tourSteps = [
     content: (
       <div className="space-y-4">
         <p>
-          To use Resume Aligner's AI features, you'll need a <strong>free</strong> Google Gemini API key. 
+          To use Resume Aligner&apos;s AI features, you&apos;ll need a <strong>free</strong> Google Gemini API key. 
           This ensures your data stays private and gives you full control.
         </p>
         
@@ -128,7 +128,7 @@ const tourSteps = [
             <Badge variant="secondary" className="w-6 h-6 rounded-full flex items-center justify-center text-xs">3</Badge>
             <div>
               <p className="font-medium">Create API Key</p>
-              <p className="text-sm text-muted-foreground">Click "Get API Key" → "Create API key in new project"</p>
+              <p className="text-sm text-muted-foreground">Click &quot;Get API Key&quot; → &quot;Create API key in new project&quot;</p>
             </div>
           </div>
           
@@ -161,7 +161,7 @@ const tourSteps = [
     title: 'What You Can Do',
     content: (
       <div className="space-y-4">
-        <p>Once your API key is set up, you'll have access to powerful AI features:</p>
+        <p>Once your API key is set up, you&apos;ll have access to powerful AI features:</p>
         
         <div className="space-y-4">
           <Card>
@@ -215,7 +215,7 @@ const tourSteps = [
   },
   {
     id: 'ready',
-    title: 'You\'re All Set! 🎉',
+    title: 'You&apos;re All Set! 🎉',
     content: (
       <div className="space-y-4">
         <p>
